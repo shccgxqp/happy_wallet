@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Box, Hidden, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import homeIcon from "../../assets/icons/icon-nav-home.svg";
 // import movieIcon from "../../assets/icons/icon-nav-movies.svg";
 // import tvSeriesIcon from "../../assets/icons/icon-nav-tv-series.svg";
@@ -70,7 +70,7 @@ const Sidebar = () => {
           width: "100%",
         }}
       >
-        <Hidden smDown>
+        <Box sx={{ display: { xs: "none", sm: "block" } }}>
           <Typography
             variant="h5"
             component="h1"
@@ -78,9 +78,9 @@ const Sidebar = () => {
             fontWeight={400}
             fontSize={18}
           >
-            PikaShowApp
+            Happy Wallet
           </Typography>
-        </Hidden>
+        </Box>
 
         <Box
           sx={{
@@ -119,9 +119,9 @@ const Sidebar = () => {
                     }`,
                   }}
                 />
-                <Hidden mdDown>
+                <Box sx={{ display: { xs: "none", md: "block" } }}>
                   <Typography>{item.name}</Typography>
-                </Hidden>
+                </Box>
               </Box>
             </Link>
           ))}

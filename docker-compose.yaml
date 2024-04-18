@@ -1,29 +1,29 @@
 services:
-  mongodb:
-    image: 'mongo'
-    volumes: 
-      - data:/data/db
-    # environment: 
-    #   MONGO_INITDB_ROOT_USERNAME: max
-    #   MONGO_INITDB_ROOT_PASSWORD: secret
-      # - MONGO_INITDB_ROOT_USERNAME=max
-    env_file: 
-      - ./env/mongo.env
-  backend:
-    build: ./backend
-    # build:
-    #   context: ./backend
-    #   dockerfile: Dockerfile
-    #   args:
-    #     some-arg: 1
-    ports:
-      - '80:80'
-    volumes: 
-      - ./backend:/app
-    env_file: 
-      - ./env/backend.env
-    depends_on:
-      - mongodb
+  # mongodb:
+  #   image: 'mongo'
+  #   volumes: 
+  #     - data:/data/db
+  #   # environment: 
+  #   #   MONGO_INITDB_ROOT_USERNAME: max
+  #   #   MONGO_INITDB_ROOT_PASSWORD: secret
+  #     # - MONGO_INITDB_ROOT_USERNAME=max
+  #   env_file: 
+  #     - ./env/mongo.env
+  # backend:
+  #   build: ./backend
+  #   # build:
+  #   #   context: ./backend
+  #   #   dockerfile: Dockerfile
+  #   #   args:
+  #   #     some-arg: 1
+  #   ports:
+  #     - '80:80'
+  #   volumes: 
+  #     - ./backend:/app
+  #   env_file: 
+  #     - ./env/backend.env
+  #   depends_on:
+  #     - mongodb
   frontend:
     container_name: hwf
     image: happy-wallet-front
