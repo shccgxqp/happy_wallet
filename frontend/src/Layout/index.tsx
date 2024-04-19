@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { Outlet } from "react-router-dom";
-import Sidebar from "../components/sidebar";
-import StickyFooter from "../components/sticky-footer";
+import Sidebar from "../components/SideBar";
+import StickyFooter from "../components/StickyFooter";
 
 const Layout = () => {
   return (

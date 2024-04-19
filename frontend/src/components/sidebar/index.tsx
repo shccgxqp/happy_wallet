@@ -50,7 +50,7 @@ const Sidebar = () => {
         alignItems: "center",
         justifyContent: "space-between",
         width: {
-          sm: "100%",
+          sm: "95%",
           lg: 200,
         },
       }}
