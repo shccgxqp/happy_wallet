@@ -5,7 +5,6 @@ import AccountCardList from "../../components/AccountCardList";
 
 import { accountData, pieData } from "../../assets/accountData";
 import { formatNumber } from "../../utils/utils";
-
 const home = () => {
   const TOTAL = pieData.map((item) => item.value).reduce((a, b) => a + b, 0);
   const getArcLabel = (params: DefaultizedPieValueType) => {
@@ -16,17 +15,18 @@ const home = () => {
   return (
     <>
       <Box
-        height={200}
-        width={"auto"}
-        my={1}
-        display="flex"
-        alignItems="center"
-        justifyItems="center"
-        justifyContent="center"
-        borderRadius="10px"
-        bgcolor={"#3F51B5"}
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "center",
+          alignItems: "center",
+          borderRadius: "10px",
+          bgcolor: "#3F51B5",
+          width: "auto",
+          height: "auto",
+        }}
       >
-        <Box m="20px">
+        <Box sx={{ height: { xs: 200, sm: 300 }, width: { xs: 200, sm: 300 } }}>
           <PieChart
             series={[
               {
@@ -40,11 +40,10 @@ const home = () => {
                 fontSize: 14,
               },
             }}
+            margin={{ right: 5 }}
             slotProps={{
               legend: { hidden: true },
             }}
-            width={300}
-            height={200}
           />
         </Box>
         <Box display={"flex"} flexDirection={"column"} alignItems={"start"}>

@@ -45,17 +45,17 @@ const AccountCardList = ({ expenses }: AccountCardListProps) => {
     <Stack
       direction={"column"}
       spacing={1}
-      sx={{ width: { sm: "100%", md: 800 }, bgcolor: "white" }}
+      sx={{ width: { xs: "100%", md: 800 }, bgcolor: "white" }}
     >
       {expenses.map((entry, index) => (
         <Card sx={{ height: 100 }}>
           <CardActionArea onClick={() => handleClickOpen(entry)}>
             <CardContent>
               <Grid container>
-                <Grid xs={1} my={"auto"}>
+                <Grid xs={2} my={"auto"}>
                   <PersonIcon sx={{ fontSize: 40 }} />
                 </Grid>
-                <Grid xs={8} style={{ textAlign: "left" }}>
+                <Grid xs={6} style={{ textAlign: "left" }}>
                   <Typography variant="h6">{entry.Name}</Typography>
                   <Typography
                     variant="caption"
@@ -73,7 +73,7 @@ const AccountCardList = ({ expenses }: AccountCardListProps) => {
                   </Typography>
                 </Grid>
                 <Grid
-                  xs={2}
+                  xs={4}
                   display={"flex"}
                   direction={"column"}
                   textAlign={"right"}
