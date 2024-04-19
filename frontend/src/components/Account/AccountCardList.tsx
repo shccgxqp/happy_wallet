@@ -5,22 +5,17 @@ import {
   CardContent,
   Avatar,
   Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button,
   CardActionArea,
   Stack,
   Grid,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
+import { CartDialog } from "../Dialog";
 
 import { AccountCardListProps, Expense } from "../../types/sharedTypes";
 import { formatNumber } from "../../utils/utils";
 
-const AccountCardList = ({ expenses }: AccountCardListProps) => {
+const AccountCardList: React.FC<AccountCardListProps> = ({ expenses }) => {
   const [open, setOpen] = useState(false);
   const [selectedData, setSelectedData] = useState<Expense>({
     Name: "",
@@ -37,15 +32,15 @@ const AccountCardList = ({ expenses }: AccountCardListProps) => {
     setOpen(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   return (
     <Stack
-      direction={"column"}
-      spacing={1}
-      sx={{ width: { xs: "100%", md: 800 }, bgcolor: "white" }}
+      sx={{
+        direction: "column",
+        spacing: 1,
+        borderRadius: "10px",
+        width: { xs: "100%", md: 800 },
+        bgcolor: "white",
+      }}
     >
       {expenses.map((entry, index) => (
         <Card sx={{ height: 100 }}>
@@ -104,17 +99,7 @@ const AccountCardList = ({ expenses }: AccountCardListProps) => {
           </CardActionArea>
         </Card>
       ))}
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>詳細資料</DialogTitle>
-        <DialogContent>
-          <DialogContentText>{selectedData.Name}</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            關閉
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <CartDialog open={open} setOpen={setOpen} data={selectedData} />
     </Stack>
   );
 };

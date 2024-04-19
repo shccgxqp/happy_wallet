@@ -1,9 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 import homeIcon from "../../assets/icons/icon-nav-home.svg";
-// import movieIcon from "../../assets/icons/icon-nav-movies.svg";
-// import tvSeriesIcon from "../../assets/icons/icon-nav-tv-series.svg";
-// import bookmarkIcon from "../../assets/icons/icon-nav-bookmark.svg";
 
 const navLinks = [
   {
@@ -33,7 +30,7 @@ const navLinks = [
   // },
 ];
 
-const Sidebar = () => {
+const Sidebar: React.FC = () => {
   const { pathname } = useLocation();
 
   return (

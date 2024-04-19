@@ -8,7 +8,7 @@ function Copyright() {
     <Typography variant="body2" color="text.secondary">
       {"Copyright © "}
       <Link color="inherit" href="https://mui.com/">
-        Your Website
+        Wang Yuan Chen
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -16,13 +16,13 @@ function Copyright() {
   );
 }
 
-export default function StickyFooter() {
+const StickyFooter = () => {
   return (
     <Box
       component="footer"
       sx={{
-        py: 3,
-        px: 2,
+        py: { xs: 1, sm: 3 },
+        px: { xs: 1, sm: 2 },
         backgroundColor: (theme) =>
           theme.palette.mode === "light"
             ? theme.palette.grey[200]
@@ -30,11 +30,14 @@ export default function StickyFooter() {
       }}
     >
       <Container maxWidth="sm">
-        <Typography variant="body1">
-          My sticky footer can be found here.
+        <Typography variant="body2">
+          {" "}
+          Built with React, TypeScript, and Material-UI.
         </Typography>
         <Copyright />
       </Container>
     </Box>
   );
-}
+};
+
+export default StickyFooter;
