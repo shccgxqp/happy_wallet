@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { DefaultizedPieValueType } from "@mui/x-charts";
 import { PieChart, pieArcLabelClasses } from "@mui/x-charts/PieChart"; // 请根据实际导入的圆饼图组件路径来替换这里的占位符
-import { AddDialog, EditDialog } from "../Dialog";
+import { AddDialog } from "../Dialog";
 
 import { formatNumber } from "../../utils/utils";
 
@@ -82,8 +82,14 @@ const AccountPieChartSection: React.FC<PieChartSectionProps> = ({
           open={openAddDialog}
           setOpen={setOpenAddDialog}
           members={accountData.members}
+          SelectedModel={"add"}
         />
-        <EditDialog open={openEditDialog} setOpen={setOpenEditDialog} />
+        <AddDialog
+          open={openEditDialog}
+          setOpen={setOpenEditDialog}
+          members={accountData.members}
+          SelectedModel={"edit"}
+        />
       </Box>
     </>
   );

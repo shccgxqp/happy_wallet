@@ -10,7 +10,7 @@ import {
   Grid,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
-import { CartDialog } from "../Dialog";
+import { AddDialog } from "../Dialog";
 
 import { AccountCardListProps, Expense } from "../../types/sharedTypes";
 import { formatNumber } from "../../utils/utils";
@@ -18,12 +18,12 @@ import { formatNumber } from "../../utils/utils";
 const AccountCardList: React.FC<AccountCardListProps> = ({ expenses }) => {
   const [open, setOpen] = useState(false);
   const [selectedData, setSelectedData] = useState<Expense>({
-    Name: "",
-    Amount: 0,
-    SharingMethod: "",
-    SharedBy: [],
-    Date: "",
-    Payer: "",
+    name: "",
+    amount: 0,
+    sharingMethod: "",
+    sharedBy: [],
+    date: "",
+    payer: "",
   });
   console.log(expenses);
 
@@ -51,16 +51,16 @@ const AccountCardList: React.FC<AccountCardListProps> = ({ expenses }) => {
                   <PersonIcon sx={{ fontSize: 40 }} />
                 </Grid>
                 <Grid item xs={6} style={{ textAlign: "left" }}>
-                  <Typography variant="h6">{entry.Name}</Typography>
+                  <Typography variant="h6">{entry.name}</Typography>
                   <Typography
                     variant="caption"
                     color="text.secondary"
                     display="block"
                   >
-                    {entry.Date}
+                    {entry.date}
                   </Typography>
                   <Typography variant="caption" color=" " display="block">
-                    {entry.Payer} 支付
+                    {entry.payer} 支付
                   </Typography>
                 </Grid>
                 <Grid item xs={4}>
@@ -69,7 +69,7 @@ const AccountCardList: React.FC<AccountCardListProps> = ({ expenses }) => {
                     sx={{ flexDirection: "column", alignItems: "flex-end" }}
                   >
                     <Typography color={"primary"}>
-                      $ {formatNumber(entry.Amount)}
+                      $ {formatNumber(entry.amount)}
                     </Typography>
                     <Box
                       display={"flex"}
@@ -77,7 +77,7 @@ const AccountCardList: React.FC<AccountCardListProps> = ({ expenses }) => {
                       alignItems={"center"}
                       mt={1}
                     >
-                      {entry.SharedBy.map((person, index) => (
+                      {entry.sharedBy.map((person, index) => (
                         <Avatar
                           alt={person.name}
                           key={index}
@@ -94,7 +94,12 @@ const AccountCardList: React.FC<AccountCardListProps> = ({ expenses }) => {
           </CardActionArea>
         </Card>
       ))}
-      <CartDialog open={open} setOpen={setOpen} data={selectedData} />
+      {/* <AddDialog
+        open={open}
+        setOpen={setOpen}
+        members={selectedData}
+        SelectedModel={"edit"}
+      /> */}
     </Stack>
   );
 };

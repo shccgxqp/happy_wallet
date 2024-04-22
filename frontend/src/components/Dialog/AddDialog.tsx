@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   Box,
@@ -26,14 +26,18 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 import PersonIcon from "@mui/icons-material/Person";
 import CloseIcon from "@mui/icons-material/Close";
-import { AccountDialogAddProps } from "../../types/AccountDialogTypes";
+import {
+  AccountDialogAddProps,
+  AccountTrader,
+} from "../../types/AccountDialogTypes";
 
 const AddDialog: React.FC<AccountDialogAddProps> = ({
   open,
   setOpen,
   members,
+  SelectedModel,
 }) => {
-  const [addTrader, setAddTrader] = useState<any>({
+  const [addTrader, setAddTrader] = useState<AccountTrader>({
     name: "",
     trader: "",
     amount: 0,
@@ -44,6 +48,10 @@ const AddDialog: React.FC<AccountDialogAddProps> = ({
     amountPerRecipient: new Array(members.length).fill(0),
     date: dayjs(new Date()),
   });
+  useEffect(() => {
+    if (SelectedModel === "edit") {
+    }
+  }, [SelectedModel]);
 
   const handleClose = () => {
     console.log(addTrader);

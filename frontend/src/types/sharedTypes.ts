@@ -4,12 +4,12 @@ export type SharedPerson = {
 };
 
 export type Expense = {
-  Name: string;
-  Amount: number;
-  SharingMethod: string;
-  SharedBy: SharedPerson[];
-  Date: string;
-  Payer: string;
+  name: string;
+  amount: number;
+  sharingMethod: string;
+  sharedBy: SharedPerson[];
+  date: string;
+  payer: string;
 };
 
 export type AccountCardListProps = {

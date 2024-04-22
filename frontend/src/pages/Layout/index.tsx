@@ -1,7 +1,8 @@
-import { Box } from "@mui/material";
 import { Outlet } from "react-router-dom";
-import Sidebar from "../components/SideBar";
-import StickyFooter from "../components/StickyFooter";
+import { Box } from "@mui/material";
+import Sidebar from "../../components/SideBar";
+import StickyFooter from "../../components/StickyFooter";
+import CssBaseline from "@mui/material/CssBaseline";
 
 const Layout = () => {
   return (
@@ -12,6 +13,7 @@ const Layout = () => {
         height: "100vh",
       }}
     >
+      <CssBaseline />
       <Box
         sx={{
           backgroundColor: "#10141F",
