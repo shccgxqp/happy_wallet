@@ -43,14 +43,14 @@ const AccountCardList: React.FC<AccountCardListProps> = ({ expenses }) => {
       }}
     >
       {expenses.map((entry, index) => (
-        <Card sx={{ height: 100 }}>
+        <Card key={index} sx={{ height: 100 }}>
           <CardActionArea onClick={() => handleClickOpen(entry)}>
             <CardContent>
-              <Grid container>
-                <Grid xs={2} my={"auto"}>
+              <Grid container direction="row">
+                <Grid item xs={2} my={"auto"}>
                   <PersonIcon sx={{ fontSize: 40 }} />
                 </Grid>
-                <Grid xs={6} style={{ textAlign: "left" }}>
+                <Grid item xs={6} style={{ textAlign: "left" }}>
                   <Typography variant="h6">{entry.Name}</Typography>
                   <Typography
                     variant="caption"
@@ -59,39 +59,34 @@ const AccountCardList: React.FC<AccountCardListProps> = ({ expenses }) => {
                   >
                     {entry.Date}
                   </Typography>
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    display="block"
-                  >
+                  <Typography variant="caption" color=" " display="block">
                     {entry.Payer} 支付
                   </Typography>
                 </Grid>
-                <Grid
-                  xs={4}
-                  display={"flex"}
-                  direction={"column"}
-                  textAlign={"right"}
-                  justifyContent={"center"}
-                >
-                  <Typography color={"primary"}>
-                    $ {formatNumber(entry.Amount)}
-                  </Typography>
+                <Grid item xs={4}>
                   <Box
                     display={"flex"}
-                    justifyContent={"flex-end"}
-                    alignItems={"center"}
-                    mt={1}
+                    sx={{ flexDirection: "column", alignItems: "flex-end" }}
                   >
-                    {entry.SharedBy.map((person, index) => (
-                      <Avatar
-                        alt={person.name}
-                        key={index}
-                        sx={{ width: 24, height: 24 }}
-                      >
-                        {person.name[0]}
-                      </Avatar>
-                    ))}
+                    <Typography color={"primary"}>
+                      $ {formatNumber(entry.Amount)}
+                    </Typography>
+                    <Box
+                      display={"flex"}
+                      justifyContent={"flex-end"}
+                      alignItems={"center"}
+                      mt={1}
+                    >
+                      {entry.SharedBy.map((person, index) => (
+                        <Avatar
+                          alt={person.name}
+                          key={index}
+                          sx={{ width: 24, height: 24 }}
+                        >
+                          {person.name[0]}
+                        </Avatar>
+                      ))}
+                    </Box>
                   </Box>
                 </Grid>
               </Grid>

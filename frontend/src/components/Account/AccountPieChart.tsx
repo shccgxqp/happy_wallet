@@ -78,7 +78,11 @@ const AccountPieChartSection: React.FC<PieChartSectionProps> = ({
           </Button>
         </Box>
 
-        <AddDialog open={openAddDialog} setOpen={setOpenAddDialog} />
+        <AddDialog
+          open={openAddDialog}
+          setOpen={setOpenAddDialog}
+          members={accountData.members}
+        />
         <EditDialog open={openEditDialog} setOpen={setOpenEditDialog} />
       </Box>
     </>
