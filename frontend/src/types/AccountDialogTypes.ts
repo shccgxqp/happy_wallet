@@ -1,4 +1,4 @@
-import {Dayjs } from 'dayjs';
+import { Dayjs } from "dayjs";
 export type AccountCartDialogProps = {
   open: boolean;
   setOpen: (value: boolean) => void;
@@ -10,21 +10,26 @@ export type AccountDialogProps = {
   setOpen: (value: boolean) => void;
 };
 
+export type members = {
+  name: string;
+  role: string;
+};
+
 export type AccountDialogAddProps = {
-  open: boolean;  
+  open: boolean;
   setOpen: (value: boolean) => void;
-  members: Array<{name: string, role: string}>;
-  SelectedModel: 'add'|'edit';
+  members: members[];
+  SelectedModel: "add" | "edit";
 };
 
 export type AccountTrader = {
-  name: string,
-    trader: string,
-    amount: number,
-    currency: string,
-    uniformInvoice: string,
-    paymentMethod: 'evenSplit'| 'ratioSplit'| 'amountSplit', 
-    recipients: Array<boolean>,
-    amountPerRecipient: Array<number>,
-    date: Dayjs | null,
-}
+  name: string;
+  trader: string;
+  amount: number;
+  currency: string;
+  uniformInvoice: string;
+  paymentMethod: "evenSplit" | "ratioSplit" | "amountSplit";
+  recipients: Array<boolean>;
+  amountPerRecipient: Array<number>;
+  date: Dayjs | null;
+};

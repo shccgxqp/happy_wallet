@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { Box } from "@mui/material";
-import Sidebar from "../../components/SideBar";
-import StickyFooter from "../../components/StickyFooter";
+import { SideBar } from "../../components/SideBar";
+import { StickyFooter } from "../../components/StickyFooter";
 import CssBaseline from "@mui/material/CssBaseline";
 
 const Layout = () => {
@@ -29,12 +29,14 @@ const Layout = () => {
           flex: "1",
         }}
       >
-        <Sidebar />
+        <SideBar />
         <Box
           sx={{
             width: "100%",
             overflowY: "auto",
             borderRadius: 2,
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           <Outlet />

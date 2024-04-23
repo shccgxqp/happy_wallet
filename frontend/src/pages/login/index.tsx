@@ -26,16 +26,15 @@ const Login = () => {
         backgroundImage: `url(${layoutBg})`,
         backgroundSize: "contain",
         height: "100%",
+        flex: "1 1 800px",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        color: "#fff",
       }}
     >
       <Box
         p={4}
         sx={{
-          width: "100%",
           background: "rgba(0,0,0,0.75)",
           maxWidth: "380px",
         }}
@@ -87,7 +86,7 @@ const Login = () => {
               </Link>
             </Typography>
             <Typography fontWeight={300} mt={2}>
-              <Link href="#" underline="hover" sx={{ color: "#fff" }}>
+              <Link href="/register" underline="hover" sx={{ color: "#fff" }}>
                 Don't have an account ? Sign up
               </Link>
             </Typography>{" "}
