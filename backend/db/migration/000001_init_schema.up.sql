@@ -1,13 +1,4 @@
-CREATE TABLE "e_group" (
-  "id" bigserial PRIMARY KEY,
-  "code" varchar UNIQUE NOT NULL,
-  "name" varchar NOT NULL,
-  "currency" varchar NOT NULL,
-  "created_at" timestamp NOT NULL DEFAULT (now()),
-  "updated_at" timestamp NOT NULL DEFAULT (now())
-);
-
-CREATE TABLE "users" (
+CREATE TABLE "accounts" (
   "id" bigserial PRIMARY KEY,
   "username" varchar NOT NULL,
   "email" varchar NOT NULL,
@@ -16,46 +7,51 @@ CREATE TABLE "users" (
   "updated_at" timestamp NOT NULL DEFAULT (now())
 );
 
+CREATE TABLE "teams" (
+  "id" bigserial PRIMARY KEY,
+  "team_name" varchar NOT NULL,
+  "currency" varchar NOT NULL,
+  "team_members" jsonb,
+  "created_at" timestamp NOT NULL DEFAULT (now()),
+  "updated_at" timestamp NOT NULL DEFAULT (now())
+);
+
+CREATE TABLE "team_members" (
+  "id" bigserial PRIMARY KEY,
+  "team_id" bigint,
+  "member_name" varchar NOT NULL,
+  "linked_account_id" bigint,
+  "created_at" timestamp NOT NULL DEFAULT (now()),
+  "updated_at" timestamp NOT NULL DEFAULT (now())
+);
+
 CREATE TABLE "expenses" (
   "id" bigserial PRIMARY KEY,
-  "name" varchar NOT NULL,
-  "amount" float NOT NULL,
-  "user_id" bigint NOT NULL,
-  "group_code" varchar NOT NULL,
+  "team_id" bigint,
+  "goal" varchar NOT NULL,
+  "amount" decimal(10,2) NOT NULL,
+  "currency" varchar NOT NULL,
+  "sharing_method" varchar NOT NULL,
   "created_at" timestamp NOT NULL DEFAULT (now()),
   "updated_at" timestamp NOT NULL DEFAULT (now())
 );
 
-CREATE TABLE "share" (
+CREATE TABLE "expense_details" (
   "id" bigserial PRIMARY KEY,
-  "expense_id" bigint NOT NULL,
-  "user_id" bigint NOT NULL,
-  "share_type" varchar NOT NULL,
-  "share_value" float,
+  "expense_id" bigint,
+  "member_id" bigint,
+  "actual_amount" decimal(10,2) DEFAULT 0,
+  "shared_amount" decimal(10,2) DEFAULT 0,
   "created_at" timestamp NOT NULL DEFAULT (now()),
   "updated_at" timestamp NOT NULL DEFAULT (now())
 );
 
-CREATE INDEX ON "e_group" ("code");
+ALTER TABLE "team_members" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("id") ON DELETE CASCADE;
 
-CREATE INDEX ON "users" ("username");
+ALTER TABLE "team_members" ADD FOREIGN KEY ("linked_account_id") REFERENCES "accounts" ("id");
 
-CREATE INDEX ON "users" ("email");
+ALTER TABLE "expenses" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("id") ON DELETE CASCADE;
 
-CREATE INDEX ON "expenses" ("user_id");
+ALTER TABLE "expense_details" ADD FOREIGN KEY ("member_id") REFERENCES "team_members" ("id");
 
-CREATE INDEX ON "expenses" ("group_code");
-
-CREATE INDEX ON "expenses" ("name", "amount");
-
-CREATE INDEX ON "share" ("expense_id");
-
-CREATE INDEX ON "share" ("user_id");
-
-ALTER TABLE "expenses" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
-
-ALTER TABLE "expenses" ADD FOREIGN KEY ("group_code") REFERENCES "e_group" ("code");
-
-ALTER TABLE "share" ADD FOREIGN KEY ("expense_id") REFERENCES "expenses" ("id");
-
-ALTER TABLE "share" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE "expense_details" ADD FOREIGN KEY ("expense_id") REFERENCES "expenses" ("id") ON DELETE CASCADE;

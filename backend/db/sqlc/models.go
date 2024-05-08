@@ -7,42 +7,54 @@ package db
 import (
 	"database/sql"
 	"time"
+
+	"github.com/sqlc-dev/pqtype"
 )
 
-type EGroup struct {
-	ID        int64     `json:"id"`
-	Code      string    `json:"code"`
-	Name      string    `json:"name"`
-	Currency  string    `json:"currency"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-}
-
-type Expense struct {
-	ID        int64     `json:"id"`
-	Name      string    `json:"name"`
-	Amount    float64   `json:"amount"`
-	UserID    int64     `json:"user_id"`
-	GroupCode string    `json:"group_code"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-}
-
-type Share struct {
-	ID         int64           `json:"id"`
-	ExpenseID  int64           `json:"expense_id"`
-	UserID     int64           `json:"user_id"`
-	ShareType  string          `json:"share_type"`
-	ShareValue sql.NullFloat64 `json:"share_value"`
-	CreatedAt  time.Time       `json:"created_at"`
-	UpdatedAt  time.Time       `json:"updated_at"`
-}
-
-type User struct {
+type Account struct {
 	ID        int64     `json:"id"`
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
 	Password  string    `json:"password"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type Expense struct {
+	ID            int64         `json:"id"`
+	TeamID        sql.NullInt64 `json:"team_id"`
+	Goal          string        `json:"goal"`
+	Amount        string        `json:"amount"`
+	Currency      string        `json:"currency"`
+	SharingMethod string        `json:"sharing_method"`
+	CreatedAt     time.Time     `json:"created_at"`
+	UpdatedAt     time.Time     `json:"updated_at"`
+}
+
+type ExpenseDetail struct {
+	ID           int64          `json:"id"`
+	ExpenseID    sql.NullInt64  `json:"expense_id"`
+	MemberID     sql.NullInt64  `json:"member_id"`
+	ActualAmount sql.NullString `json:"actual_amount"`
+	SharedAmount sql.NullString `json:"shared_amount"`
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
+}
+
+type Team struct {
+	ID          int64                 `json:"id"`
+	TeamName    string                `json:"team_name"`
+	Currency    string                `json:"currency"`
+	TeamMembers pqtype.NullRawMessage `json:"team_members"`
+	CreatedAt   time.Time             `json:"created_at"`
+	UpdatedAt   time.Time             `json:"updated_at"`
+}
+
+type TeamMember struct {
+	ID              int64         `json:"id"`
+	TeamID          sql.NullInt64 `json:"team_id"`
+	MemberName      string        `json:"member_name"`
+	LinkedAccountID sql.NullInt64 `json:"linked_account_id"`
+	CreatedAt       time.Time     `json:"created_at"`
+	UpdatedAt       time.Time     `json:"updated_at"`
 }
