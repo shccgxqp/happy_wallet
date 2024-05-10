@@ -1,4 +1,4 @@
--- name: CreateAccounts :one
+-- name: CreateAccount :one
 INSERT INTO accounts (
 username, 
 password, 

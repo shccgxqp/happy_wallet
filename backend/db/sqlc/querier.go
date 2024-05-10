@@ -10,7 +10,7 @@ import (
 )
 
 type Querier interface {
-	CreateAccounts(ctx context.Context, arg CreateAccountsParams) (Account, error)
+	CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error)
 	CreateExpense(ctx context.Context, arg CreateExpenseParams) (Expense, error)
 	CreateExpenseDetail(ctx context.Context, arg CreateExpenseDetailParams) (ExpenseDetail, error)
 	CreateTeam(ctx context.Context, arg CreateTeamParams) (Team, error)

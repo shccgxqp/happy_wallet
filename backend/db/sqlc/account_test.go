@@ -11,13 +11,13 @@ import (
 )
 
 func createRandomAccount(t *testing.T) Account {
-	arg := CreateAccountsParams{
+	arg := CreateAccountParams{
 		Username: util.RandomUsername(),
 		Password: util.RandomPassword(),
 		Email: util.RandomEmail(),
 	}
 
-	user, err := testQueries.CreateAccounts(context.Background(),arg)
+	user, err := testQueries.CreateAccount(context.Background(),arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
 
