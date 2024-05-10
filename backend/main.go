@@ -7,16 +7,16 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/shccgxqp/happt_wallet/backend/api"
 	db "github.com/shccgxqp/happt_wallet/backend/db/sqlc"
-)
-
-const (
-	dbDriver = "postgres"
-	dbSource= "postgresql://root:secret@localhost:5432/happy_wallet?sslmode=disable"
-	serverAddress = "0.0.0.0:8080"
+	"github.com/shccgxqp/happt_wallet/backend/util"
 )
 
 func main() {
-	conn, err := sql.Open(dbDriver, dbSource)
+	config, err := util.LoadConfig(".")
+	if err != nil {
+		log.Fatal("cannot load config:",err)
+	}
+
+	conn, err := sql.Open(config.DB_DRIVER, config.DB_SOURCE)
 		if err != nil {
 			log.Fatal("cannot connect to db:",err)
 	}
@@ -24,7 +24,7 @@ func main() {
 	store := db.NewStore(conn)
 	server := api.NewServer(store)
 	
-	err = server.Start(serverAddress)
+	err = server.Start(config.SERVER_ADDRESS)
 	if err != nil {
 		log.Fatal("cannot start server:",err)
 	}
