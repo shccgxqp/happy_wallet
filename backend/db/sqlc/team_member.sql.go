@@ -40,19 +40,13 @@ func (q *Queries) CreateTeamMember(ctx context.Context, arg CreateTeamMemberPara
 	return i, err
 }
 
-const getTeamMember = `-- name: GetTeamMember :one
+const getTeamMemberByID = `-- name: GetTeamMemberByID :one
 SELECT id, team_id, member_name, linked_account_id, created_at, updated_at FROM team_members
 WHERE id = $1
-AND team_id = $2
 `
 
-type GetTeamMemberParams struct {
-	ID     int64         `json:"id"`
-	TeamID sql.NullInt64 `json:"team_id"`
-}
-
-func (q *Queries) GetTeamMember(ctx context.Context, arg GetTeamMemberParams) (TeamMember, error) {
-	row := q.db.QueryRowContext(ctx, getTeamMember, arg.ID, arg.TeamID)
+func (q *Queries) GetTeamMemberByID(ctx context.Context, id int64) (TeamMember, error) {
+	row := q.db.QueryRowContext(ctx, getTeamMemberByID, id)
 	var i TeamMember
 	err := row.Scan(
 		&i.ID,

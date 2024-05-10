@@ -22,7 +22,7 @@ type Querier interface {
 	GetExpense(ctx context.Context, id int64) (Expense, error)
 	GetExpenseDetail(ctx context.Context, expenseID sql.NullInt64) (ExpenseDetail, error)
 	GetTeam(ctx context.Context, id int64) (Team, error)
-	GetTeamMember(ctx context.Context, arg GetTeamMemberParams) (TeamMember, error)
+	GetTeamMemberByID(ctx context.Context, id int64) (TeamMember, error)
 	GetTeamMembers(ctx context.Context, teamID sql.NullInt64) ([]TeamMember, error)
 	ListAccounts(ctx context.Context, arg ListAccountsParams) ([]Account, error)
 	ListExpenses(ctx context.Context, teamID sql.NullInt64) ([]Expense, error)

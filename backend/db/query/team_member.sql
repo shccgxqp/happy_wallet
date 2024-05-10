@@ -11,10 +11,9 @@ INSERT INTO team_members (
 SELECT * FROM team_members
 WHERE team_id = $1;
 
--- name: GetTeamMember :one
+-- name: GetTeamMemberByID :one
 SELECT * FROM team_members
-WHERE id = $1
-AND team_id = $2;
+WHERE id = $1;
 
 -- name: updateTeamMember :one
 UPDATE team_members
