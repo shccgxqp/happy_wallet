@@ -3,11 +3,42 @@ package db
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"testing"
 
 	"github.com/shccgxqp/happt_wallet/backend/util"
 	"github.com/stretchr/testify/require"
 )
+
+func createRandomTeamMembers(t *testing.T, team Team) []TeamMember {
+	var members []string
+	json.Unmarshal(team.TeamMembers.RawMessage, &members)
+	teamMembers := make([]TeamMember, 0, len(members))
+
+	for _, member := range members {
+		arg := CreateTeamMemberParams{
+			TeamID : sql.NullInt64{Int64: team.ID, Valid: true},
+			MemberName : string(member),
+			LinkedAccountID : sql.NullInt64{},
+		}
+
+		TeamMember,err := testQueries.CreateTeamMember(context.Background(),arg)
+		teamMembers = append(teamMembers, TeamMember)
+
+		require.NoError(t, err)
+		require.NotEmpty(t, TeamMember)
+		require.Equal(t, team.ID, TeamMember.TeamID.Int64)
+		require.Equal(t, string(member), TeamMember.MemberName)
+		require.Equal(t, arg.LinkedAccountID, TeamMember.LinkedAccountID)
+	}
+
+	return teamMembers
+}
+
+func TestCreateTeamAndMembers(t *testing.T) {
+  team :=createRandomTeam(t)
+	createRandomTeamMembers(t, team)
+}
 
 func TestGetTeamMembers(t *testing.T){
 	team :=createRandomTeam(t)
