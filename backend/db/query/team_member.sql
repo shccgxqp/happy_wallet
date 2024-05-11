@@ -15,7 +15,7 @@ WHERE team_id = $1;
 SELECT * FROM team_members
 WHERE id = $1;
 
--- name: updateTeamMember :one
+-- name: UpdateTeamMember :one
 UPDATE team_members
     SET linked_account_id = $3,
     member_name = $4

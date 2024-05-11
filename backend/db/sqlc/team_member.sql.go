@@ -94,7 +94,7 @@ func (q *Queries) GetTeamMembers(ctx context.Context, teamID sql.NullInt64) ([]T
 	return items, nil
 }
 
-const updateTeamMember = `-- name: updateTeamMember :one
+const updateTeamMember = `-- name: UpdateTeamMember :one
 UPDATE team_members
     SET linked_account_id = $3,
     member_name = $4
@@ -103,14 +103,14 @@ AND team_id = $2
 RETURNING id, team_id, member_name, linked_account_id, created_at, updated_at
 `
 
-type updateTeamMemberParams struct {
+type UpdateTeamMemberParams struct {
 	ID              int64         `json:"id"`
 	TeamID          sql.NullInt64 `json:"team_id"`
 	LinkedAccountID sql.NullInt64 `json:"linked_account_id"`
 	MemberName      string        `json:"member_name"`
 }
 
-func (q *Queries) updateTeamMember(ctx context.Context, arg updateTeamMemberParams) (TeamMember, error) {
+func (q *Queries) UpdateTeamMember(ctx context.Context, arg UpdateTeamMemberParams) (TeamMember, error) {
 	row := q.db.QueryRowContext(ctx, updateTeamMember,
 		arg.ID,
 		arg.TeamID,
