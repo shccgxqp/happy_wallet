@@ -6,13 +6,22 @@ import (
 
 	"github.com/gin-gonic/gin"
 	db "github.com/shccgxqp/happt_wallet/backend/db/sqlc"
+	"github.com/shccgxqp/happt_wallet/backend/util"
 )
 
 type createAccountRequest struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Username string `json:"username" binding:"required,alphanum"`
+	Password string `json:"password" binding:"required,min=6,max=20"`
 	Email    string `json:"email" binding:"required,email"`
 }
+
+type createUserResponse struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
+
 
 func (server *Server) createAccount(ctx *gin.Context) {
 	var req createAccountRequest
@@ -21,14 +30,25 @@ func (server *Server) createAccount(ctx *gin.Context) {
 		return
 	}
 
+	hashedPassword, err := util.HashPassword(req.Password)
+	if err != nil{
+		ctx.JSON(http.StatusInternalServerError,errorResponse(err))
+		return
+	}
+
 	arg := db.CreateAccountParams{
-		Username:     req.Username,
-		Password: req.Password,
+		Username: req.Username,
+		Password: hashedPassword,
 		Email:    req.Email,
 	}
 	
 	account, err := server.store.CreateAccount(ctx, arg)
 	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok{
+			switch "unique_violation":
+				ctx.JSON(http.StatusConflict,errorResponse(err))
+				return
+		}
 		ctx.JSON(http.StatusInternalServerError,errorResponse(err))
 		return
 	}
@@ -83,5 +103,12 @@ func(server *Server) listAccount(ctx *gin.Context){
 		return
 	}
 
-	ctx.JSON(http.StatusOK, accounts)
+	rsp := createUserResponse{
+		Username: accounts.Username,
+		Email: accounts.Email,
+		CreatedAt: accounts.CreatedAt.String(),
+		UpdatedAt: accounts.UpdatedAt.String(),
+	}
+
+	ctx.JSON(http.StatusOK, rsp)
 }
