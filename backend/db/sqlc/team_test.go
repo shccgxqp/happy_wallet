@@ -11,8 +11,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomTeam(t *testing.T) Team {
+func createRandomTeam(t *testing.T,userID int64) Team {
 	arg := CreateTeamParams{
+		Owner: userID,
 		TeamName : util.RandomString(5),
 		Currency : util.RandomCurrency(),
 		TeamMembers : util.RandomTeamMembers(3),
@@ -27,14 +28,16 @@ func createRandomTeam(t *testing.T) Team {
 
 
 func TestGetTeam(t *testing.T) {
-	team1 := createRandomTeam(t)
+	user := createRandomUser(t)
+	team1 := createRandomTeam(t, user.ID)
 	team2, err := testQueries.GetTeam(context.Background(),team1.ID)
 	require.NoError(t, err)
 	require.Equal(t, team1, team2)
 }
 
 func TestUpdateTeam(t *testing.T) {
-	team1 := createRandomTeam(t)
+	user := createRandomUser(t)
+	team1 := createRandomTeam(t, user.ID)
 
 	arg := UpdateTeamParams{
 		ID: team1.ID,
@@ -62,7 +65,8 @@ func TestUpdateTeam(t *testing.T) {
 }
 
 func TestDeleteTeam(t *testing.T){
-	team1 := createRandomTeam(t)
+	user := createRandomUser(t)
+	team1 := createRandomTeam(t, user.ID)
 	err := testQueries.DeleteTeam(context.Background(),team1.ID)
 	require.NoError(t, err)
 
@@ -74,7 +78,8 @@ func TestDeleteTeam(t *testing.T){
 
 func TestListTeam(t *testing.T) {
 	for i := 0; i < 6; i++ {
-	createRandomTeam(t)
+		user := createRandomUser(t)
+		createRandomTeam(t, user.ID)
 	}
 
 	arg := ListTeamsParams{

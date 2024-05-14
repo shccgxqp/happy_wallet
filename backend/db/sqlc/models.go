@@ -11,15 +11,6 @@ import (
 	"github.com/sqlc-dev/pqtype"
 )
 
-type Account struct {
-	ID        int64     `json:"id"`
-	Username  string    `json:"username"`
-	Email     string    `json:"email"`
-	Password  string    `json:"password"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-}
-
 type Expense struct {
 	ID            int64         `json:"id"`
 	TeamID        sql.NullInt64 `json:"team_id"`
@@ -43,6 +34,7 @@ type ExpenseDetail struct {
 
 type Team struct {
 	ID          int64                 `json:"id"`
+	Owner       int64                 `json:"owner"`
 	TeamName    string                `json:"team_name"`
 	Currency    string                `json:"currency"`
 	TeamMembers pqtype.NullRawMessage `json:"team_members"`
@@ -51,10 +43,19 @@ type Team struct {
 }
 
 type TeamMember struct {
-	ID              int64         `json:"id"`
-	TeamID          sql.NullInt64 `json:"team_id"`
-	MemberName      string        `json:"member_name"`
-	LinkedAccountID sql.NullInt64 `json:"linked_account_id"`
-	CreatedAt       time.Time     `json:"created_at"`
-	UpdatedAt       time.Time     `json:"updated_at"`
+	ID           int64         `json:"id"`
+	TeamID       sql.NullInt64 `json:"team_id"`
+	MemberName   string        `json:"member_name"`
+	LinkedUserID sql.NullInt64 `json:"linked_user_id"`
+	CreatedAt    time.Time     `json:"created_at"`
+	UpdatedAt    time.Time     `json:"updated_at"`
+}
+
+type User struct {
+	ID        int64     `json:"id"`
+	Username  string    `json:"username"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

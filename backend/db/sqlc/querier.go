@@ -10,28 +10,28 @@ import (
 )
 
 type Querier interface {
-	CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error)
 	CreateExpense(ctx context.Context, arg CreateExpenseParams) (Expense, error)
 	CreateExpenseDetail(ctx context.Context, arg CreateExpenseDetailParams) (ExpenseDetail, error)
 	CreateTeam(ctx context.Context, arg CreateTeamParams) (Team, error)
 	CreateTeamMember(ctx context.Context, arg CreateTeamMemberParams) (TeamMember, error)
-	DeleteAccount(ctx context.Context, id int64) error
+	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteTeam(ctx context.Context, id int64) error
-	GetAccount(ctx context.Context, id int64) (Account, error)
-	GetAccountByEmail(ctx context.Context, email string) (Account, error)
+	DeleteUser(ctx context.Context, id int64) error
 	GetExpense(ctx context.Context, id int64) (Expense, error)
 	GetExpenseDetail(ctx context.Context, expenseID sql.NullInt64) (ExpenseDetail, error)
 	GetTeam(ctx context.Context, id int64) (Team, error)
 	GetTeamMemberByID(ctx context.Context, id int64) (TeamMember, error)
 	GetTeamMembers(ctx context.Context, teamID sql.NullInt64) ([]TeamMember, error)
-	ListAccounts(ctx context.Context, arg ListAccountsParams) ([]Account, error)
+	GetUser(ctx context.Context, username string) (User, error)
+	GetUserByEmail(ctx context.Context, email string) (User, error)
 	ListExpenses(ctx context.Context, teamID sql.NullInt64) ([]Expense, error)
 	ListTeams(ctx context.Context, arg ListTeamsParams) ([]Team, error)
-	UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error)
+	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
 	UpdateExpense(ctx context.Context, arg UpdateExpenseParams) (Expense, error)
 	UpdateExpenseDetail(ctx context.Context, arg UpdateExpenseDetailParams) (ExpenseDetail, error)
 	UpdateTeam(ctx context.Context, arg UpdateTeamParams) (Team, error)
 	UpdateTeamMember(ctx context.Context, arg UpdateTeamMemberParams) (TeamMember, error)
+	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)

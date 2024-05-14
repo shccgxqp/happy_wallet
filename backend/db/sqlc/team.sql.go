@@ -13,25 +13,33 @@ import (
 
 const createTeam = `-- name: CreateTeam :one
 INSERT INTO teams (
+owner,
 team_name, 
 currency,
 team_members
 ) VALUES (
-  $1, $2, $3
-) RETURNING id, team_name, currency, team_members, created_at, updated_at
+  $1, $2, $3, $4
+) RETURNING id, owner, team_name, currency, team_members, created_at, updated_at
 `
 
 type CreateTeamParams struct {
+	Owner       int64                 `json:"owner"`
 	TeamName    string                `json:"team_name"`
 	Currency    string                `json:"currency"`
 	TeamMembers pqtype.NullRawMessage `json:"team_members"`
 }
 
 func (q *Queries) CreateTeam(ctx context.Context, arg CreateTeamParams) (Team, error) {
-	row := q.db.QueryRowContext(ctx, createTeam, arg.TeamName, arg.Currency, arg.TeamMembers)
+	row := q.db.QueryRowContext(ctx, createTeam,
+		arg.Owner,
+		arg.TeamName,
+		arg.Currency,
+		arg.TeamMembers,
+	)
 	var i Team
 	err := row.Scan(
 		&i.ID,
+		&i.Owner,
 		&i.TeamName,
 		&i.Currency,
 		&i.TeamMembers,
@@ -51,7 +59,7 @@ func (q *Queries) DeleteTeam(ctx context.Context, id int64) error {
 }
 
 const getTeam = `-- name: GetTeam :one
-SELECT id, team_name, currency, team_members, created_at, updated_at FROM teams
+SELECT id, owner, team_name, currency, team_members, created_at, updated_at FROM teams
 WHERE id = $1 LIMIT 1
 `
 
@@ -60,6 +68,7 @@ func (q *Queries) GetTeam(ctx context.Context, id int64) (Team, error) {
 	var i Team
 	err := row.Scan(
 		&i.ID,
+		&i.Owner,
 		&i.TeamName,
 		&i.Currency,
 		&i.TeamMembers,
@@ -70,7 +79,7 @@ func (q *Queries) GetTeam(ctx context.Context, id int64) (Team, error) {
 }
 
 const listTeams = `-- name: ListTeams :many
-SELECT id, team_name, currency, team_members, created_at, updated_at FROM teams
+SELECT id, owner, team_name, currency, team_members, created_at, updated_at FROM teams
 ORDER BY id
 LIMIT $1 
 OFFSET $2
@@ -92,6 +101,7 @@ func (q *Queries) ListTeams(ctx context.Context, arg ListTeamsParams) ([]Team, e
 		var i Team
 		if err := rows.Scan(
 			&i.ID,
+			&i.Owner,
 			&i.TeamName,
 			&i.Currency,
 			&i.TeamMembers,
@@ -117,7 +127,7 @@ UPDATE teams
   currency = $3,
   team_members = $4
 WHERE id = $1
-RETURNING id, team_name, currency, team_members, created_at, updated_at
+RETURNING id, owner, team_name, currency, team_members, created_at, updated_at
 `
 
 type UpdateTeamParams struct {
@@ -137,6 +147,7 @@ func (q *Queries) UpdateTeam(ctx context.Context, arg UpdateTeamParams) (Team, e
 	var i Team
 	err := row.Scan(
 		&i.ID,
+		&i.Owner,
 		&i.TeamName,
 		&i.Currency,
 		&i.TeamMembers,
