@@ -14,26 +14,26 @@ const createTeamMember = `-- name: CreateTeamMember :one
 INSERT INTO team_members (
     team_id,
     member_name,
-    linked_account_id
+    linked_user_id
 ) VALUES (
   $1, $2, $3
-) RETURNING id, team_id, member_name, linked_account_id, created_at, updated_at
+) RETURNING id, team_id, member_name, linked_user_id, created_at, updated_at
 `
 
 type CreateTeamMemberParams struct {
-	TeamID          sql.NullInt64 `json:"team_id"`
-	MemberName      string        `json:"member_name"`
-	LinkedAccountID sql.NullInt64 `json:"linked_account_id"`
+	TeamID       sql.NullInt64 `json:"team_id"`
+	MemberName   string        `json:"member_name"`
+	LinkedUserID sql.NullInt64 `json:"linked_user_id"`
 }
 
 func (q *Queries) CreateTeamMember(ctx context.Context, arg CreateTeamMemberParams) (TeamMember, error) {
-	row := q.db.QueryRowContext(ctx, createTeamMember, arg.TeamID, arg.MemberName, arg.LinkedAccountID)
+	row := q.db.QueryRowContext(ctx, createTeamMember, arg.TeamID, arg.MemberName, arg.LinkedUserID)
 	var i TeamMember
 	err := row.Scan(
 		&i.ID,
 		&i.TeamID,
 		&i.MemberName,
-		&i.LinkedAccountID,
+		&i.LinkedUserID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -41,7 +41,7 @@ func (q *Queries) CreateTeamMember(ctx context.Context, arg CreateTeamMemberPara
 }
 
 const getTeamMemberByID = `-- name: GetTeamMemberByID :one
-SELECT id, team_id, member_name, linked_account_id, created_at, updated_at FROM team_members
+SELECT id, team_id, member_name, linked_user_id, created_at, updated_at FROM team_members
 WHERE id = $1
 `
 
@@ -52,7 +52,7 @@ func (q *Queries) GetTeamMemberByID(ctx context.Context, id int64) (TeamMember, 
 		&i.ID,
 		&i.TeamID,
 		&i.MemberName,
-		&i.LinkedAccountID,
+		&i.LinkedUserID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -60,7 +60,7 @@ func (q *Queries) GetTeamMemberByID(ctx context.Context, id int64) (TeamMember, 
 }
 
 const getTeamMembers = `-- name: GetTeamMembers :many
-SELECT id, team_id, member_name, linked_account_id, created_at, updated_at FROM team_members
+SELECT id, team_id, member_name, linked_user_id, created_at, updated_at FROM team_members
 WHERE team_id = $1
 `
 
@@ -77,7 +77,7 @@ func (q *Queries) GetTeamMembers(ctx context.Context, teamID sql.NullInt64) ([]T
 			&i.ID,
 			&i.TeamID,
 			&i.MemberName,
-			&i.LinkedAccountID,
+			&i.LinkedUserID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -94,27 +94,27 @@ func (q *Queries) GetTeamMembers(ctx context.Context, teamID sql.NullInt64) ([]T
 	return items, nil
 }
 
-const updateTeamMember = `-- name: updateTeamMember :one
+const updateTeamMember = `-- name: UpdateTeamMember :one
 UPDATE team_members
-    SET linked_account_id = $3,
+    SET linked_user_id = $3,
     member_name = $4
 WHERE id = $1
 AND team_id = $2
-RETURNING id, team_id, member_name, linked_account_id, created_at, updated_at
+RETURNING id, team_id, member_name, linked_user_id, created_at, updated_at
 `
 
-type updateTeamMemberParams struct {
-	ID              int64         `json:"id"`
-	TeamID          sql.NullInt64 `json:"team_id"`
-	LinkedAccountID sql.NullInt64 `json:"linked_account_id"`
-	MemberName      string        `json:"member_name"`
+type UpdateTeamMemberParams struct {
+	ID           int64         `json:"id"`
+	TeamID       sql.NullInt64 `json:"team_id"`
+	LinkedUserID sql.NullInt64 `json:"linked_user_id"`
+	MemberName   string        `json:"member_name"`
 }
 
-func (q *Queries) updateTeamMember(ctx context.Context, arg updateTeamMemberParams) (TeamMember, error) {
+func (q *Queries) UpdateTeamMember(ctx context.Context, arg UpdateTeamMemberParams) (TeamMember, error) {
 	row := q.db.QueryRowContext(ctx, updateTeamMember,
 		arg.ID,
 		arg.TeamID,
-		arg.LinkedAccountID,
+		arg.LinkedUserID,
 		arg.MemberName,
 	)
 	var i TeamMember
@@ -122,7 +122,7 @@ func (q *Queries) updateTeamMember(ctx context.Context, arg updateTeamMemberPara
 		&i.ID,
 		&i.TeamID,
 		&i.MemberName,
-		&i.LinkedAccountID,
+		&i.LinkedUserID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

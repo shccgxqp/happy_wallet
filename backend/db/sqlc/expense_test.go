@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"strconv"
 	"testing"
 
@@ -19,8 +18,6 @@ func createRandomExpense(t *testing.T,teamID sql.NullInt64) Expense{
 		Currency: util.RandomCurrency(),
 		SharingMethod: util.RandomString(10),
 	}
-
-	fmt.Println(arg.Amount)
 
 	expense, err := testQueries.CreateExpense(context.Background(), arg)
 	require.NoError(t, err)
@@ -41,13 +38,15 @@ func createRandomExpense(t *testing.T,teamID sql.NullInt64) Expense{
 
 
 func TestCreateExpense(t *testing.T){
-	team :=createRandomTeam(t)
+	user := createRandomUser(t)
+  team :=createRandomTeam(t, user.ID)
 	createRandomTeamMembers(t,team)
   createRandomExpense(t,sql.NullInt64{Int64:team.ID,Valid:true})
 }
 
 func TestGetExpense(t *testing.T){
-	team :=createRandomTeam(t)
+	user := createRandomUser(t)
+  team :=createRandomTeam(t, user.ID)
 	createRandomTeamMembers(t,team)
 	expense := createRandomExpense(t,sql.NullInt64{Int64:team.ID,Valid:true})
 	gotExpense, err := testQueries.GetExpense(context.Background(), expense.ID)
@@ -56,7 +55,8 @@ func TestGetExpense(t *testing.T){
 }
 
 func TestListExpenses(t *testing.T){
-	team :=createRandomTeam(t)
+	user := createRandomUser(t)
+  team :=createRandomTeam(t, user.ID)
 	createRandomTeamMembers(t,team)
 	for i := 0; i < 5; i++ {
 		createRandomExpense(t,sql.NullInt64{Int64:team.ID,Valid:true})

@@ -1,10 +1,11 @@
 -- name: CreateTeam :one
 INSERT INTO teams (
+owner,
 team_name, 
 currency,
 team_members
 ) VALUES (
-  $1, $2, $3
+  $1, $2, $3, $4
 ) RETURNING *;
 
 -- name: GetTeam :one

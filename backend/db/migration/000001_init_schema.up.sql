@@ -1,7 +1,7 @@
-CREATE TABLE "accounts" (
+CREATE TABLE "users" (
   "id" bigserial PRIMARY KEY,
   "username" varchar NOT NULL,
-  "email" varchar NOT NULL,
+  "email" varchar UNIQUE NOT NULL,
   "password" varchar NOT NULL,
   "created_at" timestamp NOT NULL DEFAULT (now()),
   "updated_at" timestamp NOT NULL DEFAULT (now())
@@ -9,6 +9,7 @@ CREATE TABLE "accounts" (
 
 CREATE TABLE "teams" (
   "id" bigserial PRIMARY KEY,
+  "owner" bigserial NOT NULL,
   "team_name" varchar NOT NULL,
   "currency" varchar NOT NULL,
   "team_members" jsonb,
@@ -20,7 +21,7 @@ CREATE TABLE "team_members" (
   "id" bigserial PRIMARY KEY,
   "team_id" bigint,
   "member_name" varchar NOT NULL,
-  "linked_account_id" bigint,
+  "linked_user_id" bigint,
   "created_at" timestamp NOT NULL DEFAULT (now()),
   "updated_at" timestamp NOT NULL DEFAULT (now())
 );
@@ -46,9 +47,11 @@ CREATE TABLE "expense_details" (
   "updated_at" timestamp NOT NULL DEFAULT (now())
 );
 
+ALTER TABLE "teams" ADD FOREIGN KEY ("owner") REFERENCES "users" ("id");
+
 ALTER TABLE "team_members" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("id") ON DELETE CASCADE;
 
-ALTER TABLE "team_members" ADD FOREIGN KEY ("linked_account_id") REFERENCES "accounts" ("id");
+ALTER TABLE "team_members" ADD FOREIGN KEY ("linked_user_id") REFERENCES "users" ("id");
 
 ALTER TABLE "expenses" ADD FOREIGN KEY ("team_id") REFERENCES "teams" ("id") ON DELETE CASCADE;
 

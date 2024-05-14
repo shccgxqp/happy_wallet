@@ -10,14 +10,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomAccount(t *testing.T) Account {
-	arg := CreateAccountsParams{
+func createRandomUser(t *testing.T) User {
+	hashedPassword, err := util.HashPassword(util.RandomString(6))
+	require.NoError(t, err)
+
+	arg := CreateUserParams{
 		Username: util.RandomUsername(),
-		Password: util.RandomPassword(),
+		Password: hashedPassword,
 		Email: util.RandomEmail(),
 	}
 
-	user, err := testQueries.CreateAccounts(context.Background(),arg)
+	user, err := testQueries.CreateUser(context.Background(),arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
 
@@ -33,12 +36,12 @@ func createRandomAccount(t *testing.T) Account {
 }
 
 func TestCreateUser(t *testing.T) {
-	createRandomAccount(t)
+	createRandomUser(t)
 }
 
 func TestGetAccount(t *testing.T) {
-	user1 := createRandomAccount(t)
-	user2, err := testQueries.GetAccount(context.Background(), user1.ID)
+	user1 := createRandomUser(t)
+	user2, err := testQueries.GetUser(context.Background(), user1.Username)
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 
@@ -51,16 +54,16 @@ func TestGetAccount(t *testing.T) {
 }
 
 func TestUpdateAccount(t *testing.T) {
-	user1 := createRandomAccount(t)
+	user1 := createRandomUser(t)
 
-	arg := UpdateAccountParams{
+	arg := UpdateUserParams{
 		ID:       user1.ID,
 		Username: util.RandomUsername(),
 		Password: util.RandomPassword(),
 		Email:    util.RandomEmail(),
 	}
 
-	user2, err := testQueries.UpdateAccount(context.Background(), arg)
+	user2, err := testQueries.UpdateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t,user2 )
 
@@ -73,11 +76,11 @@ func TestUpdateAccount(t *testing.T) {
 }
 
 func TestDeleteAccount(t *testing.T) {
-	user1 := createRandomAccount(t)
-	err := testQueries.DeleteAccount(context.Background(), user1.ID)
+	user1 := createRandomUser(t)
+	err := testQueries.DeleteUser(context.Background(), user1.ID)
 	require.NoError(t, err)
 
-	user2, err := testQueries.GetAccount(context.Background(), user1.ID)
+	user2, err := testQueries.GetUser(context.Background(), user1.Username)
 	require.Error(t, err)
 	require.EqualError(t,err, sql.ErrNoRows.Error())
 	require.Empty(t, user2)
@@ -85,15 +88,15 @@ func TestDeleteAccount(t *testing.T) {
 
 func TestListAccounts(t *testing.T) {
 	for i :=0; i < 10; i++{
-		createRandomAccount(t)
+		createRandomUser(t)
 	}
 
-	arg := ListAccountsParams{
+	arg := ListUsersParams{
 		Limit: 5,
 		Offset: 5,
 	}
 	
-	users, err := testQueries.ListAccounts(context.Background(), arg)
+	users, err := testQueries.ListUsers(context.Background(), arg)
 	require.NoError(t, err)
 	require.Len(t, users, 5)
 
