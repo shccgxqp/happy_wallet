@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"strconv"
 	"testing"
 
@@ -19,8 +18,6 @@ func createRandomExpense(t *testing.T,teamID sql.NullInt64) Expense{
 		Currency: util.RandomCurrency(),
 		SharingMethod: util.RandomString(10),
 	}
-
-	fmt.Println(arg.Amount)
 
 	expense, err := testQueries.CreateExpense(context.Background(), arg)
 	require.NoError(t, err)
