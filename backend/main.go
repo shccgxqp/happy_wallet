@@ -5,9 +5,9 @@ import (
 	"log"
 
 	_ "github.com/lib/pq"
-	"github.com/shccgxqp/happt_wallet/backend/api"
-	db "github.com/shccgxqp/happt_wallet/backend/db/sqlc"
-	"github.com/shccgxqp/happt_wallet/backend/util"
+	"github.com/shccgxqp/happy_wallet/backend/api"
+	db "github.com/shccgxqp/happy_wallet/backend/db/sqlc"
+	"github.com/shccgxqp/happy_wallet/backend/util"
 )
 
 func main() {

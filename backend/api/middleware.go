@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/shccgxqp/happt_wallet/backend/token"
+	"github.com/shccgxqp/happy_wallet/backend/token"
 )
 
 const (

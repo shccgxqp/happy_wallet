@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	db "github.com/shccgxqp/happt_wallet/backend/db/sqlc"
-	"github.com/shccgxqp/happt_wallet/backend/token"
+	db "github.com/shccgxqp/happy_wallet/backend/db/sqlc"
+	"github.com/shccgxqp/happy_wallet/backend/token"
 	"github.com/sqlc-dev/pqtype"
 )
 

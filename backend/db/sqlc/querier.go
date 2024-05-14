@@ -7,11 +7,14 @@ package db
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
 	CreateExpense(ctx context.Context, arg CreateExpenseParams) (Expense, error)
 	CreateExpenseDetail(ctx context.Context, arg CreateExpenseDetailParams) (ExpenseDetail, error)
+	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateTeam(ctx context.Context, arg CreateTeamParams) (Team, error)
 	CreateTeamMember(ctx context.Context, arg CreateTeamMemberParams) (TeamMember, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
@@ -19,6 +22,7 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id int64) error
 	GetExpense(ctx context.Context, id int64) (Expense, error)
 	GetExpenseDetail(ctx context.Context, expenseID sql.NullInt64) (ExpenseDetail, error)
+	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetTeam(ctx context.Context, id int64) (Team, error)
 	GetTeamMemberByID(ctx context.Context, id int64) (TeamMember, error)
 	GetTeamMembers(ctx context.Context, teamID sql.NullInt64) ([]TeamMember, error)

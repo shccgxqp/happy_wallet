@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	db "github.com/shccgxqp/happt_wallet/backend/db/sqlc"
-	"github.com/shccgxqp/happt_wallet/backend/util"
+	db "github.com/shccgxqp/happy_wallet/backend/db/sqlc"
+	"github.com/shccgxqp/happy_wallet/backend/util"
 	"github.com/stretchr/testify/require"
 )
 

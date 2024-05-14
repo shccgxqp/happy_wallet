@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/sqlc-dev/pqtype"
 )
 
@@ -30,6 +31,17 @@ type ExpenseDetail struct {
 	SharedAmount sql.NullString `json:"shared_amount"`
 	CreatedAt    time.Time      `json:"created_at"`
 	UpdatedAt    time.Time      `json:"updated_at"`
+}
+
+type Session struct {
+	ID           uuid.UUID `json:"id"`
+	UserID       int64     `json:"user_id"`
+	RefreshToken string    `json:"refresh_token"`
+	UserAgent    string    `json:"user_agent"`
+	ClientIp     string    `json:"client_ip"`
+	IsBlocked    bool      `json:"is_blocked"`
+	ExpiresAt    time.Time `json:"expires_at"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 type Team struct {

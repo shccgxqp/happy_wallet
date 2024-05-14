@@ -1,4 +1,4 @@
-module github.com/shccgxqp/happt_wallet/backend
+module github.com/shccgxqp/happy_wallet/backend
 
 go 1.22.2
 
