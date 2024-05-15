@@ -1,32 +1,36 @@
 services:
-  # mongodb:
-  #   image: 'mongo'
-  #   volumes: 
-  #     - data:/data/db
-  #   # environment: 
-  #   #   MONGO_INITDB_ROOT_USERNAME: max
-  #   #   MONGO_INITDB_ROOT_PASSWORD: secret
-  #     # - MONGO_INITDB_ROOT_USERNAME=max
-  #   env_file: 
-  #     - ./env/mongo.env
-  # backend:
-  #   build: ./backend
-  #   # build:
-  #   #   context: ./backend
-  #   #   dockerfile: Dockerfile
-  #   #   args:
-  #   #     some-arg: 1
-  #   ports:
-  #     - '80:80'
-  #   volumes: 
-  #     - ./backend:/app
-  #   env_file: 
-  #     - ./env/backend.env
-  #   depends_on:
-  #     - mongodb
+  postgres:
+    image: postgres:16.2-alpine
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=happy_wallet
+
+  backend:
+    image: happy-wallet-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      - DB_SOURCE=postgresql://root:secret@postgres:5432/happy_wallet?sslmode=disable
+    depends_on:
+      - postgres
+    entrypoint:
+      [
+        "/app/wait-for.sh",
+        "postgres:5432",
+        "--",
+        "/app/start.sh"
+      ]
+    command: [ "/app/main" ]
+
   frontend:
     container_name: hwf
-    image: happy-wallet-front
+    image: happy-wallet-frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -42,6 +46,8 @@ services:
     stdin_open: true
     tty: true
     command: npm run dev
+    depends_on:
+      - backend
 
 # volumes:
 #   node_modules:

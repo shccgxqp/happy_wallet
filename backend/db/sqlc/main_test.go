@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	_ "github.com/lib/pq"
-	"github.com/shccgxqp/happt_wallet/backend/util"
+	"github.com/shccgxqp/happy_wallet/backend/util"
 )
 
 var testQueries *Queries

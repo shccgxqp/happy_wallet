@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	db "github.com/shccgxqp/happt_wallet/backend/db/sqlc"
-	"github.com/shccgxqp/happt_wallet/backend/token"
+	db "github.com/shccgxqp/happy_wallet/backend/db/sqlc"
+	"github.com/shccgxqp/happy_wallet/backend/token"
 	"github.com/sqlc-dev/pqtype"
 )
 
@@ -27,7 +27,7 @@ func (server *Server) createTeam(ctx *gin.Context) {
 	arg := db.CreateTeamParams{
 			TeamName: req.Name,
 			Currency: req.Currency,
-			TeamMembers: pqtype.NullRawMessage{RawMessage: json.RawMessage(authPayload.Username),Valid: true},
+			TeamMembers: pqtype.NullRawMessage{RawMessage: json.RawMessage(authPayload.ID.String()),Valid: true},
 	}
 
 	team, err := server.store.CreateTeam(ctx, arg)
