@@ -1,3 +1,18 @@
 {
-  "makefile.makefilePath": "make"
+  "makefile.makefilePath": "make",
+  "cSpell.words": [
+    "alphanum",
+    "dgrijalva",
+    "gomock",
+    "gonic",
+    "mapstructure",
+    "mockdb",
+    "Paseto",
+    "pqtype",
+    "recoder",
+    "shccgxqp",
+    "sqlc",
+    "stretchr",
+    "verr"
+  ]
 }
