@@ -2,7 +2,6 @@ package api
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -127,18 +126,14 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println("user.Password :",user.Password)
-	fmt.Println("req.Password :",req.Password)
-
 	err = util.CheckPassword(req.Password, user.Password)
-	fmt.Println("err :",err)
 	if err != nil{
 		ctx.JSON(http.StatusUnauthorized,errorResponse(err))
 		return
 	}
 
 	accessToken,accessPayload, err := server.tokenMaker.CreateToken(
-		user.Username,
+		user.ID,
 		server.config.ACCESS_TOKEN_DURATION,
 	)
 	if err != nil {
@@ -147,7 +142,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 	}
 
 	refreshToken, refreshPayload, err := server.tokenMaker.CreateToken(
-		user.Username,
+		user.ID,
 		server.config.REFRESH_TOKEN_DURATION,
 	)
 	if err != nil {

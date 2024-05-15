@@ -26,6 +26,7 @@ func (server *Server) renewAccessToken(ctx *gin.Context) {
 		return
 	}
 
+
 	refreshPayload, err := server.tokenMaker.VerifyToken(req.RefreshToken)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
@@ -48,8 +49,9 @@ func (server *Server) renewAccessToken(ctx *gin.Context) {
 		return
 	}
 
-	if session.UserID != int64(refreshPayload.ID[0]) {
-		err := fmt.Errorf("incorrect session user")
+
+	if session.UserID != int64(refreshPayload.UserID) {
+		err := fmt.Errorf("incorrect session userID")
 		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
 		return
 	}
@@ -67,7 +69,7 @@ func (server *Server) renewAccessToken(ctx *gin.Context) {
 	}
 
 	accessToken, accessPayload, err := server.tokenMaker.CreateToken(
-		refreshPayload.Username,
+		refreshPayload.UserID,
 		server.config.ACCESS_TOKEN_DURATION,
 	)
 	if err != nil {

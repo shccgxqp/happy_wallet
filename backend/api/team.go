@@ -27,7 +27,7 @@ func (server *Server) createTeam(ctx *gin.Context) {
 	arg := db.CreateTeamParams{
 			TeamName: req.Name,
 			Currency: req.Currency,
-			TeamMembers: pqtype.NullRawMessage{RawMessage: json.RawMessage(authPayload.Username),Valid: true},
+			TeamMembers: pqtype.NullRawMessage{RawMessage: json.RawMessage(authPayload.ID.String()),Valid: true},
 	}
 
 	team, err := server.store.CreateTeam(ctx, arg)
