@@ -19,22 +19,22 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 	if violations != nil {
 		return nil, invalidArgumentError(violations)
 	}
-	
+
 	user, err := server.store.GetUser(ctx, req.GetUsername())
 	if err != nil {
-		if err == sql.ErrNoRows{
+		if err == sql.ErrNoRows {
 			return nil, status.Errorf(codes.NotFound, "user not found")
-			}
+		}
 
 		return nil, status.Errorf(codes.Internal, "internal error")
 	}
 
 	err = util.CheckPassword(req.Password, user.Password)
-	if err != nil{
-		return nil , status.Errorf(codes.Unauthenticated, "incorrect password")
+	if err != nil {
+		return nil, status.Errorf(codes.Unauthenticated, "incorrect password")
 	}
 
-	accessToken,accessPayload, err := server.tokenMaker.CreateToken(
+	accessToken, accessPayload, err := server.tokenMaker.CreateToken(
 		user.ID,
 		server.config.ACCESS_TOKEN_DURATION,
 	)
@@ -52,24 +52,24 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 
 	mtdt := server.extractMetadata(ctx)
 	session, err := server.store.CreateSession(ctx, db.CreateSessionParams{
-	ID:           refreshPayload.ID,
-	UserID:       user.ID,
-	RefreshToken: refreshToken,
-	UserAgent:    mtdt.UserAgent,
-	ClientIp:     mtdt.ClientIP,
-	IsBlocked:    false,
-	ExpiresAt:    refreshPayload.ExpiredAt,
+		ID:           refreshPayload.ID,
+		UserID:       user.ID,
+		RefreshToken: refreshToken,
+		UserAgent:    mtdt.UserAgent,
+		ClientIp:     mtdt.ClientIP,
+		IsBlocked:    false,
+		ExpiresAt:    refreshPayload.ExpiredAt,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create session")
 	}
 
 	rsp := &pb.LoginUserResponse{
-		User: convertUser(user),
-		SessionId: session.ID.String(),
-		AccessToken: accessToken,
-		RefreshToken: refreshToken,
-		AccessTokenExpiresTime: timestamppb.New(accessPayload.ExpiredAt),
+		User:                    convertUser(user),
+		SessionId:               session.ID.String(),
+		AccessToken:             accessToken,
+		RefreshToken:            refreshToken,
+		AccessTokenExpiresTime:  timestamppb.New(accessPayload.ExpiredAt),
 		RefreshTokenExpiresTime: timestamppb.New(refreshPayload.ExpiredAt),
 	}
 

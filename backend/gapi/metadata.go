@@ -13,9 +13,9 @@ const (
 	xForwardedForHeader        = "x-forwarded-for"
 )
 
-type Metadata struct{
+type Metadata struct {
 	UserAgent string
-	ClientIP string
+	ClientIP  string
 }
 
 func (server *Server) extractMetadata(ctx context.Context) *Metadata {
@@ -29,7 +29,6 @@ func (server *Server) extractMetadata(ctx context.Context) *Metadata {
 		if userAgents := md.Get(userAgentHeader); len(userAgents) > 0 {
 			mtdt.UserAgent = userAgents[0]
 		}
-
 
 		if clientIPs := md.Get(xForwardedForHeader); len(clientIPs) > 0 {
 			mtdt.ClientIP = clientIPs[0]

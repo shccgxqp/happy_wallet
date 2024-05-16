@@ -39,7 +39,7 @@ func TestCreateUser(t *testing.T) {
 	createRandomUser(t)
 }
 
-func TestGetAccount(t *testing.T) {
+func TestGetUser(t *testing.T) {
 	user1 := createRandomUser(t)
 	user2, err := testQueries.GetUser(context.Background(), user1.Username)
 	require.NoError(t, err)
@@ -53,29 +53,101 @@ func TestGetAccount(t *testing.T) {
 	require.WithinDuration(t, user1.UpdatedAt, user2.UpdatedAt,time.Second)
 }
 
-func TestUpdateAccount(t *testing.T) {
-	user1 := createRandomUser(t)
+func TestUpdateUser(t *testing.T) {
+	oldUser  := createRandomUser(t)
 
-	arg := UpdateUserParams{
-		ID:       user1.ID,
-		Username: util.RandomUsername(),
-		Password: util.RandomPassword(),
-		Email:    util.RandomEmail(),
-	}
-
-	user2, err := testQueries.UpdateUser(context.Background(), arg)
+	newUsername := util.RandomUsername()
+	newEmail := util.RandomEmail()
+	newPassword := util.RandomString(6)
+	newHashedPassword, err := util.HashPassword(newPassword)
 	require.NoError(t, err)
-	require.NotEmpty(t,user2 )
 
-	require.Equal(t, user1.ID, user2.ID)
-	require.Equal(t, arg.Username, user2.Username)
-	require.Equal(t, arg.Password, user2.Password)
-	require.Equal(t, arg.Email, user2.Email)
-	require.WithinDuration(t, user1.CreatedAt, user2.CreatedAt,time.Second)
-	require.WithinDuration(t, user1.UpdatedAt, user2.UpdatedAt,time.Second)
+	updatedUser, err := testQueries.UpdateUser(context.Background(), UpdateUserParams{
+		ID:       oldUser.ID,
+		Username: sql.NullString{
+			String: newUsername,
+			Valid:  true,
+		},
+		Password: sql.NullString{
+			String: newHashedPassword,
+			Valid:  true,
+		},
+		Email:    sql.NullString{
+			String: newEmail,
+			Valid:  true,
+		},
+	})
+
+	require.NoError(t, err)
+	require.NotEqual(t, oldUser.Password, updatedUser.Password)
+	require.Equal(t, newHashedPassword, updatedUser.Password)
+	require.NotEqual(t, oldUser.Email, updatedUser.Email)
+	require.Equal(t, newEmail, updatedUser.Email)
+	require.NotEqual(t, oldUser.Username, updatedUser.Username)
+	require.Equal(t, newUsername, updatedUser.Username)
 }
 
-func TestDeleteAccount(t *testing.T) {
+func TestUpdateUserOnlyUsername(t *testing.T) {
+	oldUser := createRandomUser(t)
+
+	newUsername := util.RandomUsername()
+	updatedUser, err := testQueries.UpdateUser(context.Background(), UpdateUserParams{
+		ID: oldUser.ID,
+		Username: sql.NullString{
+			String: newUsername,
+			Valid:  true,
+		},
+	})
+
+	require.NoError(t, err)
+	require.NotEqual(t, oldUser.Username, updatedUser.Username)
+	require.Equal(t, newUsername, updatedUser.Username)
+	require.Equal(t, oldUser.Email, updatedUser.Email)
+	require.Equal(t, oldUser.Password, updatedUser.Password)
+}
+
+func TestUpdateUserOnlyEmail(t *testing.T) {
+	oldUser := createRandomUser(t)
+
+	newEmail := util.RandomEmail()
+	updatedUser, err := testQueries.UpdateUser(context.Background(), UpdateUserParams{
+		ID: oldUser.ID,
+		Email: sql.NullString{
+			String: newEmail,
+			Valid:  true,
+		},
+	})
+
+	require.NoError(t, err)
+	require.NotEqual(t, oldUser.Email, updatedUser.Email)
+	require.Equal(t, newEmail, updatedUser.Email)
+	require.Equal(t, oldUser.Username, updatedUser.Username)
+	require.Equal(t, oldUser.Password, updatedUser.Password)
+}
+
+func TestUpdateUserOnlyPassword(t *testing.T) {
+	oldUser := createRandomUser(t)
+
+	newPassword := util.RandomPassword()
+	newHashedPassword, err := util.HashPassword(newPassword)
+	require.NoError(t, err)
+	
+	updatedUser, err := testQueries.UpdateUser(context.Background(), UpdateUserParams{
+		ID: oldUser.ID,
+		Password: sql.NullString{
+			String: newHashedPassword,
+			Valid:  true,
+		},
+	})
+
+	require.NoError(t, err)
+	require.NotEqual(t, oldUser.Password, updatedUser.Password)
+	require.Equal(t, newHashedPassword, updatedUser.Password)
+	require.Equal(t, oldUser.Username, updatedUser.Username)
+	require.Equal(t, oldUser.Email, updatedUser.Email)
+}
+
+func TestDeleteUser(t *testing.T) {
 	user1 := createRandomUser(t)
 	err := testQueries.DeleteUser(context.Background(), user1.ID)
 	require.NoError(t, err)
@@ -86,7 +158,7 @@ func TestDeleteAccount(t *testing.T) {
 	require.Empty(t, user2)
 }
 
-func TestListAccounts(t *testing.T) {
+func TestListUsers(t *testing.T) {
 	for i :=0; i < 10; i++{
 		createRandomUser(t)
 	}

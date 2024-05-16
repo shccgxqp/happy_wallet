@@ -10,21 +10,21 @@ import (
 )
 
 type Server struct {
-    pb.UnimplementedHappyWalletServer
-    config util.Config
-    store  db.Store
-    tokenMaker token.Maker
+	pb.UnimplementedHappyWalletServer
+	config     util.Config
+	store      db.Store
+	tokenMaker token.Maker
 }
 
 func NewServer(config util.Config, store db.Store) (*Server, error) {
-    tokenMaker, err := token.NewPasetoMaker(config.TOKEN_SYMMETRIC_KEY)
-    if err != nil {
-        return nil, fmt.Errorf("failed to create token maker: %w", err)
-    }
-    server := &Server{
-        config:     config,
-        store:      store,
-        tokenMaker: tokenMaker,
-    }
-    return server, nil
+	tokenMaker, err := token.NewPasetoMaker(config.TOKEN_SYMMETRIC_KEY)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create token maker: %w", err)
+	}
+	server := &Server{
+		config:     config,
+		store:      store,
+		tokenMaker: tokenMaker,
+	}
+	return server, nil
 }

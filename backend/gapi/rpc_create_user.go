@@ -25,17 +25,17 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 	}
 
 	arg := db.CreateUserParams{
-			Username:       req.GetUsername(),
-			Password:       hashedPassword,
-			Email:          req.GetEmail(),
+		Username: req.GetUsername(),
+		Password: hashedPassword,
+		Email:    req.GetEmail(),
 	}
 
 	user, err := server.store.CreateUser(ctx, arg)
 	if err != nil {
-		if pqErr,ok:=err.(*pq.Error);ok{
-			switch pqErr.Code.Name(){
-				case "unique_violation":
-					return nil, status.Errorf(codes.AlreadyExists, "username or email already exists: %s",err)
+		if pqErr, ok := err.(*pq.Error); ok {
+			switch pqErr.Code.Name() {
+			case "unique_violation":
+				return nil, status.Errorf(codes.AlreadyExists, "username or email already exists: %s", err)
 			}
 			return nil, status.Errorf(codes.Internal, "failed to create user: %s", err)
 		}
