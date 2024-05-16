@@ -3,16 +3,19 @@
   "cSpell.words": [
     "alphanum",
     "dgrijalva",
+    "gapi",
     "gomock",
     "gonic",
     "mapstructure",
     "mockdb",
     "Paseto",
     "pqtype",
+    "protojson",
     "recoder",
     "shccgxqp",
     "sqlc",
     "stretchr",
+    "timestamppb",
     "verr"
   ]
 }
