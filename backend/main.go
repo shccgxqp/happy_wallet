@@ -9,8 +9,10 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	_ "github.com/lib/pq"
+	"github.com/rakyll/statik/fs"
 	"github.com/shccgxqp/happy_wallet/backend/api"
 	db "github.com/shccgxqp/happy_wallet/backend/db/sqlc"
+	_ "github.com/shccgxqp/happy_wallet/backend/doc/statik"
 	"github.com/shccgxqp/happy_wallet/backend/gapi"
 	"github.com/shccgxqp/happy_wallet/backend/pb"
 	"github.com/shccgxqp/happy_wallet/backend/util"
@@ -85,8 +87,13 @@ func runGatewayServer(config util.Config,store db.Store) {
 	mux := http.NewServeMux()
 	mux.Handle("/", grpcMux)
 
-	fs := http.FileServer(http.Dir("./doc/swagger"))
-	mux.Handle("/swagger/", http.StripPrefix("/swagger/", fs))
+	statikFS, err := fs.New()
+	if err != nil {
+		log.Fatal("cannot load statik file system:", err)
+	}
+
+	swaggerHandler := http.StripPrefix("/swagger/", http.FileServer(statikFS))
+	mux.Handle("/swagger/", swaggerHandler)
 
 	listener, err := net.Listen("tcp", config.HTTP_SERVER_ADDRESS)
     if err != nil {
