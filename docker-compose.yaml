@@ -28,26 +28,26 @@ services:
       ]
     command: [ "/app/main" ]
 
-  frontend:
-    container_name: hwf
-    image: happy-wallet-frontend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - 3000:3000
-    volumes:
-      - ./frontend/src:/app/src
-      # - node_modules:/app/node_modules
-    environment:
-      - NODE_ENV=development
-      # - CHOKIDAR_USEPOLLING=true
-      # - FAST_REFRESH = false
-    stdin_open: true
-    tty: true
-    command: npm run dev
-    depends_on:
-      - backend
+  # frontend:
+  #   container_name: hwf
+  #   image: happy-wallet-frontend
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./frontend/src:/app/src
+  #     # - node_modules:/app/node_modules
+  #   environment:
+  #     - NODE_ENV=development
+  #     # - CHOKIDAR_USEPOLLING=true
+  #     # - FAST_REFRESH = false
+  #   stdin_open: true
+  #   tty: true
+  #   command: npm run dev
+  #   depends_on:
+  #     - backend
 
 # volumes:
 #   node_modules:

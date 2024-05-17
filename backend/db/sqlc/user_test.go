@@ -17,10 +17,10 @@ func createRandomUser(t *testing.T) User {
 	arg := CreateUserParams{
 		Username: util.RandomUsername(),
 		Password: hashedPassword,
-		Email: util.RandomEmail(),
+		Email:    util.RandomEmail(),
 	}
 
-	user, err := testQueries.CreateUser(context.Background(),arg)
+	user, err := testQueries.CreateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
 
@@ -49,12 +49,12 @@ func TestGetUser(t *testing.T) {
 	require.Equal(t, user1.Username, user2.Username)
 	require.Equal(t, user1.Password, user2.Password)
 	require.Equal(t, user1.Email, user2.Email)
-	require.WithinDuration(t, user1.CreatedAt, user2.CreatedAt,time.Second)
-	require.WithinDuration(t, user1.UpdatedAt, user2.UpdatedAt,time.Second)
+	require.WithinDuration(t, user1.CreatedAt, user2.CreatedAt, time.Second)
+	require.WithinDuration(t, user1.UpdatedAt, user2.UpdatedAt, time.Second)
 }
 
 func TestUpdateUser(t *testing.T) {
-	oldUser  := createRandomUser(t)
+	oldUser := createRandomUser(t)
 
 	newUsername := util.RandomUsername()
 	newEmail := util.RandomEmail()
@@ -63,7 +63,7 @@ func TestUpdateUser(t *testing.T) {
 	require.NoError(t, err)
 
 	updatedUser, err := testQueries.UpdateUser(context.Background(), UpdateUserParams{
-		ID:       oldUser.ID,
+		ID: oldUser.ID,
 		Username: sql.NullString{
 			String: newUsername,
 			Valid:  true,
@@ -72,7 +72,7 @@ func TestUpdateUser(t *testing.T) {
 			String: newHashedPassword,
 			Valid:  true,
 		},
-		Email:    sql.NullString{
+		Email: sql.NullString{
 			String: newEmail,
 			Valid:  true,
 		},
@@ -131,7 +131,7 @@ func TestUpdateUserOnlyPassword(t *testing.T) {
 	newPassword := util.RandomPassword()
 	newHashedPassword, err := util.HashPassword(newPassword)
 	require.NoError(t, err)
-	
+
 	updatedUser, err := testQueries.UpdateUser(context.Background(), UpdateUserParams{
 		ID: oldUser.ID,
 		Password: sql.NullString{
@@ -154,25 +154,25 @@ func TestDeleteUser(t *testing.T) {
 
 	user2, err := testQueries.GetUser(context.Background(), user1.Username)
 	require.Error(t, err)
-	require.EqualError(t,err, sql.ErrNoRows.Error())
+	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, user2)
 }
 
 func TestListUsers(t *testing.T) {
-	for i :=0; i < 10; i++{
+	for i := 0; i < 10; i++ {
 		createRandomUser(t)
 	}
 
 	arg := ListUsersParams{
-		Limit: 5,
+		Limit:  5,
 		Offset: 5,
 	}
-	
+
 	users, err := testQueries.ListUsers(context.Background(), arg)
 	require.NoError(t, err)
 	require.Len(t, users, 5)
 
-	for _,user := range users{
+	for _, user := range users {
 		require.NotEmpty(t, user)
 		require.NotEmpty(t, user.ID)
 		require.NotEmpty(t, user.Username)

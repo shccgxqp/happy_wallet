@@ -27,12 +27,12 @@ import (
 func main() {
 	config, err := util.LoadConfig(".")
 	if err != nil {
-		log.Fatal("cannot load config:",err)
+		log.Fatal("cannot load config:", err)
 	}
 
 	conn, err := sql.Open(config.DB_DRIVER, config.DB_SOURCE)
-		if err != nil {
-			log.Fatal("cannot connect to db:",err)
+	if err != nil {
+		log.Fatal("cannot connect to db:", err)
 	}
 
 	runDBMigration(config.MIGRATION_URL, config.DB_SOURCE)
@@ -55,10 +55,10 @@ func runDBMigration(migrationURL string, dbSource string) {
 	log.Println("db migrated successfully")
 }
 
-func runGrpcServer(config util.Config,store db.Store) {
+func runGrpcServer(config util.Config, store db.Store) {
 	server, err := gapi.NewServer(config, store)
 	if err != nil {
-			log.Fatal("cannot create grpc server:", err)
+		log.Fatal("cannot create grpc server:", err)
 	}
 
 	grpcServer := grpc.NewServer()
@@ -66,24 +66,24 @@ func runGrpcServer(config util.Config,store db.Store) {
 	reflection.Register(grpcServer)
 
 	listener, err := net.Listen("tcp", config.GRPC_SERVER_ADDRESS)
-    if err != nil {
-        log.Fatal("cannot listen to grpc server:", err)
-    }
-
-    log.Printf("start gRPC server at %s", listener.Addr().String())
-    err = grpcServer.Serve(listener)
-    if err != nil {
-        log.Fatal("cannot serve grpc server:", err)
-    }
-}
-
-func runGatewayServer(config util.Config,store db.Store) {
-	server, err := gapi.NewServer(config, store)
 	if err != nil {
-			log.Fatal("cannot create grpc server:", err)
+		log.Fatal("cannot listen to grpc server:", err)
 	}
 
-	jsonOption := 	runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
+	log.Printf("start gRPC server at %s", listener.Addr().String())
+	err = grpcServer.Serve(listener)
+	if err != nil {
+		log.Fatal("cannot serve grpc server:", err)
+	}
+}
+
+func runGatewayServer(config util.Config, store db.Store) {
+	server, err := gapi.NewServer(config, store)
+	if err != nil {
+		log.Fatal("cannot create grpc server:", err)
+	}
+
+	jsonOption := runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
 		MarshalOptions: protojson.MarshalOptions{
 			UseProtoNames: true,
 		},
@@ -99,7 +99,7 @@ func runGatewayServer(config util.Config,store db.Store) {
 
 	err = pb.RegisterHappyWalletHandlerServer(ctx, grpcMux, server)
 	if err != nil {
-			log.Fatal("cannot register handler server:", err)
+		log.Fatal("cannot register handler server:", err)
 	}
 
 	mux := http.NewServeMux()
@@ -114,25 +114,25 @@ func runGatewayServer(config util.Config,store db.Store) {
 	mux.Handle("/swagger/", swaggerHandler)
 
 	listener, err := net.Listen("tcp", config.HTTP_SERVER_ADDRESS)
-    if err != nil {
-        log.Fatal("cannot listen to grpc server:", err)
-    }
+	if err != nil {
+		log.Fatal("cannot listen to grpc server:", err)
+	}
 
-    log.Printf("start HTTP gateway server at %s", listener.Addr().String())
-    err = http.Serve(listener, mux)
-    if err != nil {
-        log.Fatal("cannot serve HTTP gateway server:", err)
-    }
+	log.Printf("start HTTP gateway server at %s", listener.Addr().String())
+	err = http.Serve(listener, mux)
+	if err != nil {
+		log.Fatal("cannot serve HTTP gateway server:", err)
+	}
 }
 
-func runGinServer(config util.Config,store db.Store) {
-	server,err := api.NewServer(config, store)
+func runGinServer(config util.Config, store db.Store) {
+	server, err := api.NewServer(config, store)
 	if err != nil {
-		log.Fatal("cannot create server:",err)
+		log.Fatal("cannot create server:", err)
 	}
-	
+
 	err = server.Start(config.HTTP_SERVER_ADDRESS)
 	if err != nil {
-		log.Fatal("cannot start server:",err)
+		log.Fatal("cannot start server:", err)
 	}
 }

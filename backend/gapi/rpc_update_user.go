@@ -3,7 +3,6 @@ package gapi
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	db "github.com/shccgxqp/happy_wallet/backend/db/sqlc"
@@ -16,9 +15,18 @@ import (
 )
 
 func (server *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
+	authPayload, err := server.authorizeUser(ctx)
+	if err != nil {
+		return nil, unauthenticatedError(err)
+	}
+
 	violations := validateUpdateUserRequest(req)
 	if violations != nil {
 		return nil, invalidArgumentError(violations)
+	}
+
+	if authPayload.UserID != req.GetId() {
+		return nil, status.Errorf(codes.PermissionDenied, "user id mismatch")
 	}
 
 	arg := db.UpdateUserParams{

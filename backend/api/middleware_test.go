@@ -21,7 +21,7 @@ func addAuthorization(
 	userID int64,
 	duration time.Duration,
 ) {
-	token,payload, err := tokenMaker.CreateToken(userID, duration)
+	token, payload, err := tokenMaker.CreateToken(userID, duration)
 	require.NoError(t, err)
 	require.NotEmpty(t, payload)
 
@@ -30,7 +30,7 @@ func addAuthorization(
 }
 
 func TestAuthMiddleware(t *testing.T) {
-	userID := util.RandomInt(1,10000)
+	userID := util.RandomInt(1, 10000)
 
 	testCases := []struct {
 		name          string
