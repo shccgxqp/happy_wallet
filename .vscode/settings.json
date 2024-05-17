@@ -22,6 +22,7 @@
     "statik",
     "stretchr",
     "timestamppb",
-    "verr"
+    "verr",
+    "zerolog"
   ]
 }
