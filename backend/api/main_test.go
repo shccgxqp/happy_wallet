@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-
 func newTestServer(t *testing.T, store db.Store) *Server {
 	config := util.Config{
 		TOKEN_SYMMETRIC_KEY:   util.RandomString(32),

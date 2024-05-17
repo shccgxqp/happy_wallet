@@ -10,12 +10,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomExpense(t *testing.T,teamID sql.NullInt64) Expense{
-	arg :=CreateExpenseParams{
-		TeamID: teamID,
-		Goal: util.RandomString(5),
-		Amount: strconv.FormatFloat(util.RandomFloat(100,1000), 'f', 2, 64), 
-		Currency: util.RandomCurrency(),
+func createRandomExpense(t *testing.T, teamID sql.NullInt64) Expense {
+	arg := CreateExpenseParams{
+		TeamID:        teamID,
+		Goal:          util.RandomString(5),
+		Amount:        strconv.FormatFloat(util.RandomFloat(100, 1000), 'f', 2, 64),
+		Currency:      util.RandomCurrency(),
 		SharingMethod: util.RandomString(10),
 	}
 
@@ -36,34 +36,32 @@ func createRandomExpense(t *testing.T,teamID sql.NullInt64) Expense{
 	return expense
 }
 
-
-func TestCreateExpense(t *testing.T){
+func TestCreateExpense(t *testing.T) {
 	user := createRandomUser(t)
-  team :=createRandomTeam(t, user.ID)
-	createRandomTeamMembers(t,team)
-  createRandomExpense(t,sql.NullInt64{Int64:team.ID,Valid:true})
+	team := createRandomTeam(t, user.ID)
+	createRandomTeamMembers(t, team)
+	createRandomExpense(t, sql.NullInt64{Int64: team.ID, Valid: true})
 }
 
-func TestGetExpense(t *testing.T){
+func TestGetExpense(t *testing.T) {
 	user := createRandomUser(t)
-  team :=createRandomTeam(t, user.ID)
-	createRandomTeamMembers(t,team)
-	expense := createRandomExpense(t,sql.NullInt64{Int64:team.ID,Valid:true})
+	team := createRandomTeam(t, user.ID)
+	createRandomTeamMembers(t, team)
+	expense := createRandomExpense(t, sql.NullInt64{Int64: team.ID, Valid: true})
 	gotExpense, err := testQueries.GetExpense(context.Background(), expense.ID)
 	require.NoError(t, err)
 	require.Equal(t, expense, gotExpense)
 }
 
-func TestListExpenses(t *testing.T){
+func TestListExpenses(t *testing.T) {
 	user := createRandomUser(t)
-  team :=createRandomTeam(t, user.ID)
-	createRandomTeamMembers(t,team)
+	team := createRandomTeam(t, user.ID)
+	createRandomTeamMembers(t, team)
 	for i := 0; i < 5; i++ {
-		createRandomExpense(t,sql.NullInt64{Int64:team.ID,Valid:true})
+		createRandomExpense(t, sql.NullInt64{Int64: team.ID, Valid: true})
 	}
 
-	expenses, err := testQueries.ListExpenses(context.Background(), sql.NullInt64{Int64:team.ID,Valid:true})
+	expenses, err := testQueries.ListExpenses(context.Background(), sql.NullInt64{Int64: team.ID, Valid: true})
 	require.NoError(t, err)
 	require.NotEmpty(t, expenses)
 }
-

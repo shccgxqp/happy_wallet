@@ -17,12 +17,12 @@ func createRandomTeamMembers(t *testing.T, team Team) []TeamMember {
 
 	for _, member := range members {
 		arg := CreateTeamMemberParams{
-			TeamID : sql.NullInt64{Int64: team.ID, Valid: true},
-			MemberName : string(member),
-			LinkedUserID : sql.NullInt64{},
+			TeamID:       sql.NullInt64{Int64: team.ID, Valid: true},
+			MemberName:   string(member),
+			LinkedUserID: sql.NullInt64{},
 		}
 
-		TeamMember,err := testQueries.CreateTeamMember(context.Background(),arg)
+		TeamMember, err := testQueries.CreateTeamMember(context.Background(), arg)
 		teamMembers = append(teamMembers, TeamMember)
 
 		require.NoError(t, err)
@@ -37,13 +37,13 @@ func createRandomTeamMembers(t *testing.T, team Team) []TeamMember {
 
 func TestCreateTeamAndMembers(t *testing.T) {
 	user := createRandomUser(t)
-  team :=createRandomTeam(t, user.ID)
+	team := createRandomTeam(t, user.ID)
 	createRandomTeamMembers(t, team)
 }
 
-func TestGetTeamMembers(t *testing.T){
+func TestGetTeamMembers(t *testing.T) {
 	user := createRandomUser(t)
-  team :=createRandomTeam(t, user.ID)
+	team := createRandomTeam(t, user.ID)
 	createRandomTeamMembers(t, team)
 
 	teamID := sql.NullInt64{Int64: team.ID, Valid: true}
@@ -52,16 +52,16 @@ func TestGetTeamMembers(t *testing.T){
 	require.NotEmpty(t, members)
 }
 
-func TestUpdateTeamMember(t *testing.T){
+func TestUpdateTeamMember(t *testing.T) {
 	user := createRandomUser(t)
-  team :=createRandomTeam(t, user.ID)
+	team := createRandomTeam(t, user.ID)
 	members := createRandomTeamMembers(t, team)
 
 	for _, member := range members {
-		arg:= UpdateTeamMemberParams{
-			ID : member.ID,
-			TeamID : sql.NullInt64{Int64: team.ID, Valid: true},
-			MemberName : util.RandomUsername(),
+		arg := UpdateTeamMemberParams{
+			ID:         member.ID,
+			TeamID:     sql.NullInt64{Int64: team.ID, Valid: true},
+			MemberName: util.RandomUsername(),
 		}
 
 		TeamMember, err := testQueries.UpdateTeamMember(context.Background(), arg)
@@ -71,4 +71,3 @@ func TestUpdateTeamMember(t *testing.T){
 		require.Equal(t, arg.TeamID, TeamMember.TeamID)
 	}
 }
-

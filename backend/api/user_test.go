@@ -20,7 +20,6 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-
 type eqCreateUserParamsMatcher struct {
 	arg      db.CreateUserParams
 	password string
@@ -40,7 +39,6 @@ func (e eqCreateUserParamsMatcher) Matches(x interface{}) bool {
 	e.arg.Password = arg.Password
 	return reflect.DeepEqual(e.arg, arg)
 }
-
 
 func (e eqCreateUserParamsMatcher) String() string {
 	return fmt.Sprintf("matches arg %v and password %v", e.arg, e.password)
@@ -62,9 +60,9 @@ func TestCreateUserAPI(t *testing.T) {
 		{
 			name: "OK",
 			body: gin.H{
-				"username":  user.Username,
-				"password":  password,
-				"email":     user.Email,
+				"username": user.Username,
+				"password": password,
+				"email":    user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				arg := db.CreateUserParams{
@@ -84,9 +82,9 @@ func TestCreateUserAPI(t *testing.T) {
 		{
 			name: "InternalError",
 			body: gin.H{
-				"username":  user.Username,
-				"password":  password,
-				"email":     user.Email,
+				"username": user.Username,
+				"password": password,
+				"email":    user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -101,9 +99,9 @@ func TestCreateUserAPI(t *testing.T) {
 		{
 			name: "DuplicateUsername",
 			body: gin.H{
-				"username":  user.Username,
-				"password":  password,
-				"email":     user.Email,
+				"username": user.Username,
+				"password": password,
+				"email":    user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -118,9 +116,9 @@ func TestCreateUserAPI(t *testing.T) {
 		{
 			name: "InvalidUsername",
 			body: gin.H{
-				"username":  "invalid-user#1",
-				"password":  password,
-				"email":     user.Email,
+				"username": "invalid-user#1",
+				"password": password,
+				"email":    user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -134,9 +132,9 @@ func TestCreateUserAPI(t *testing.T) {
 		{
 			name: "InvalidEmail",
 			body: gin.H{
-				"username":  user.Username,
-				"password":  password,
-				"email":     "invalid-email",
+				"username": user.Username,
+				"password": password,
+				"email":    "invalid-email",
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -150,9 +148,9 @@ func TestCreateUserAPI(t *testing.T) {
 		{
 			name: "TooShortPassword",
 			body: gin.H{
-				"username":  user.Username,
-				"password":  "123",
-				"email":     user.Email,
+				"username": user.Username,
+				"password": "123",
+				"email":    user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -247,7 +245,7 @@ func TestLoginUserAPI(t *testing.T) {
 					GetUser(gomock.Any(), gomock.Eq(user.Username)).
 					Times(1).
 					Return(user, nil)
-				
+
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusUnauthorized, recorder.Code)
@@ -319,27 +317,27 @@ func randomUser(t *testing.T) (user db.User, password string) {
 	require.NoError(t, err)
 
 	user = db.User{
-		Username:       util.RandomUsername(),
-		Password:       hashedPassword,
-		Email:          util.RandomEmail(),
+		Username: util.RandomUsername(),
+		Password: hashedPassword,
+		Email:    util.RandomEmail(),
 	}
 	return
 }
 
 func requireBodyMatchUser(t *testing.T, body io.Reader, user db.User) {
-  data, err := io.ReadAll(body)
-  if err != nil {
-    t.Errorf("Failed to read response body: %v", err)
-    return
-  } 
-  var getUser db.User
-  err = json.Unmarshal(data, &getUser)
-  if err != nil {
-      t.Errorf("Failed to unmarshal JSON: %v", err)
-      return
-  }
-  fmt.Println(getUser)
-  require.Equal(t, user.Username, getUser.Username)
-  require.Equal(t, user.Email, getUser.Email)
-  require.Empty(t, getUser.Password)
+	data, err := io.ReadAll(body)
+	if err != nil {
+		t.Errorf("Failed to read response body: %v", err)
+		return
+	}
+	var getUser db.User
+	err = json.Unmarshal(data, &getUser)
+	if err != nil {
+		t.Errorf("Failed to unmarshal JSON: %v", err)
+		return
+	}
+	fmt.Println(getUser)
+	require.Equal(t, user.Username, getUser.Username)
+	require.Equal(t, user.Email, getUser.Email)
+	require.Empty(t, getUser.Password)
 }

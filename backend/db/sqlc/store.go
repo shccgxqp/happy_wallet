@@ -57,7 +57,6 @@ func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) erro
 // 	Share Share `json:"share"`
 // }
 
-
 // func (store *Store) expensesTx(ctx context.Context, arg expensesTxParams) (expensesTxResult, error) {
 // 	var result expensesTxResult
 // 	err := store.execTx(ctx, func(q *Queries) error {

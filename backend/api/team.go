@@ -11,23 +11,23 @@ import (
 )
 
 type createTeamRequest struct {
-	Name string `json:"name" binding:"required"`
-	Currency string `json:"currency" binding:"required"`
+	Name         string                `json:"name" binding:"required"`
+	Currency     string                `json:"currency" binding:"required"`
 	Team_members pqtype.NullRawMessage `json:"team_members" binding:"required"`
 }
 
 func (server *Server) createTeam(ctx *gin.Context) {
 	var req createTeamRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest,errorResponse(err))
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	
+
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	arg := db.CreateTeamParams{
-			TeamName: req.Name,
-			Currency: req.Currency,
-			TeamMembers: pqtype.NullRawMessage{RawMessage: json.RawMessage(authPayload.ID.String()),Valid: true},
+		TeamName:    req.Name,
+		Currency:    req.Currency,
+		TeamMembers: pqtype.NullRawMessage{RawMessage: json.RawMessage(authPayload.ID.String()), Valid: true},
 	}
 
 	team, err := server.store.CreateTeam(ctx, arg)
@@ -37,9 +37,8 @@ func (server *Server) createTeam(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, team)
-	
-}
 
+}
 
 // type listTeamRequest struct {
 // 	PageID int32 `form:"page_id" binding:"required,min=1"`

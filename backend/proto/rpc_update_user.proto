@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package pb;
+
+import "user.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/shccgxqp/happy_wallet/backend/pb";
+
+message UpdateUserRequest {
+  int64 id = 1;
+  optional string username = 2;
+  optional string password = 3;
+  optional string email = 4;
+}
+
+message UpdateUserResponse {
+  User user = 1;
+}
