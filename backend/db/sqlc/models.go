@@ -42,6 +42,7 @@ type Session struct {
 	IsBlocked    bool      `json:"is_blocked"`
 	ExpiresAt    time.Time `json:"expires_at"`
 	CreatedAt    time.Time `json:"created_at"`
+	Username     string    `json:"username"`
 }
 
 type Team struct {
@@ -64,10 +65,22 @@ type TeamMember struct {
 }
 
 type User struct {
-	ID        int64     `json:"id"`
-	Username  string    `json:"username"`
-	Email     string    `json:"email"`
-	Password  string    `json:"password"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID               int64     `json:"id"`
+	Username         string    `json:"username"`
+	Email            string    `json:"email"`
+	Password         string    `json:"password"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
+	IsEmailVerified  bool      `json:"is_email_verified"`
+	PasswordChangeAt time.Time `json:"password_change_at"`
+}
+
+type VerifyEmail struct {
+	ID         int64     `json:"id"`
+	UserID     int64     `json:"user_id"`
+	Email      string    `json:"email"`
+	SecretCode string    `json:"secret_code"`
+	IsUsed     bool      `json:"is_used"`
+	CreatedAt  time.Time `json:"created_at"`
+	ExpiredAt  time.Time `json:"expired_at"`
 }

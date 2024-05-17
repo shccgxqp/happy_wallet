@@ -23,7 +23,7 @@ INSERT INTO sessions (
   expires_at
 ) VALUES (
   $1, $2, $3, $4, $5, $6, $7
-) RETURNING id, user_id, refresh_token, user_agent, client_ip, is_blocked, expires_at, created_at
+) RETURNING id, user_id, refresh_token, user_agent, client_ip, is_blocked, expires_at, created_at, username
 `
 
 type CreateSessionParams struct {
@@ -56,12 +56,13 @@ func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (S
 		&i.IsBlocked,
 		&i.ExpiresAt,
 		&i.CreatedAt,
+		&i.Username,
 	)
 	return i, err
 }
 
 const getSession = `-- name: GetSession :one
-SELECT id, user_id, refresh_token, user_agent, client_ip, is_blocked, expires_at, created_at FROM sessions
+SELECT id, user_id, refresh_token, user_agent, client_ip, is_blocked, expires_at, created_at, username FROM sessions
 WHERE id = $1 LIMIT 1
 `
 
@@ -77,6 +78,7 @@ func (q *Queries) GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 		&i.IsBlocked,
 		&i.ExpiresAt,
 		&i.CreatedAt,
+		&i.Username,
 	)
 	return i, err
 }

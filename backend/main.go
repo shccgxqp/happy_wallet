@@ -20,6 +20,7 @@ import (
 	db "github.com/shccgxqp/happy_wallet/backend/db/sqlc"
 	_ "github.com/shccgxqp/happy_wallet/backend/doc/statik"
 	"github.com/shccgxqp/happy_wallet/backend/gapi"
+	"github.com/shccgxqp/happy_wallet/backend/mail"
 	"github.com/shccgxqp/happy_wallet/backend/pb"
 	"github.com/shccgxqp/happy_wallet/backend/util"
 	"github.com/shccgxqp/happy_wallet/backend/worker"
@@ -54,7 +55,7 @@ func main() {
 
 	taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
 
-	go runTaskProcessor(redisOpt, store)
+	go runTaskProcessor(config, redisOpt, store)
 	go runGatewayServer(config, store, taskDistributor)
 	runGrpcServer(config, store, taskDistributor)
 }
@@ -73,10 +74,12 @@ func runDBMigration(migrationURL string, dbSource string) {
 }
 
 func runTaskProcessor(
+	config util.Config,
 	redisOpt asynq.RedisClientOpt,
 	store db.Store,
 ) {
-	taskProcessor := worker.NewRedisTaskProcessor(redisOpt, store)
+	mailer := mail.NewGmailSender(config.EMAIL_SENDER_NAME, config.EMAIL_SENDER_ADDRESS, config.EMAIL_SENDER_PASSWORD)
+	taskProcessor := worker.NewRedisTaskProcessor(redisOpt, store, mailer)
 
 	log.Info().Msg("start task processor")
 	err := taskProcessor.Start()
