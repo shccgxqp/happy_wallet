@@ -7,8 +7,6 @@ package db
 
 import (
 	"context"
-
-	"github.com/sqlc-dev/pqtype"
 )
 
 const createTeam = `-- name: CreateTeam :one
@@ -23,14 +21,14 @@ team_members
 `
 
 type CreateTeamParams struct {
-	Owner       int64                 `json:"owner"`
-	TeamName    string                `json:"team_name"`
-	Currency    string                `json:"currency"`
-	TeamMembers pqtype.NullRawMessage `json:"team_members"`
+	Owner       int64  `json:"owner"`
+	TeamName    string `json:"team_name"`
+	Currency    string `json:"currency"`
+	TeamMembers []byte `json:"team_members"`
 }
 
 func (q *Queries) CreateTeam(ctx context.Context, arg CreateTeamParams) (Team, error) {
-	row := q.db.QueryRowContext(ctx, createTeam,
+	row := q.db.QueryRow(ctx, createTeam,
 		arg.Owner,
 		arg.TeamName,
 		arg.Currency,
@@ -54,7 +52,7 @@ DELETE FROM teams WHERE id = $1
 `
 
 func (q *Queries) DeleteTeam(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteTeam, id)
+	_, err := q.db.Exec(ctx, deleteTeam, id)
 	return err
 }
 
@@ -64,7 +62,7 @@ WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetTeam(ctx context.Context, id int64) (Team, error) {
-	row := q.db.QueryRowContext(ctx, getTeam, id)
+	row := q.db.QueryRow(ctx, getTeam, id)
 	var i Team
 	err := row.Scan(
 		&i.ID,
@@ -91,7 +89,7 @@ type ListTeamsParams struct {
 }
 
 func (q *Queries) ListTeams(ctx context.Context, arg ListTeamsParams) ([]Team, error) {
-	rows, err := q.db.QueryContext(ctx, listTeams, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listTeams, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -112,9 +110,6 @@ func (q *Queries) ListTeams(ctx context.Context, arg ListTeamsParams) ([]Team, e
 		}
 		items = append(items, i)
 	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
@@ -131,14 +126,14 @@ RETURNING id, owner, team_name, currency, team_members, created_at, updated_at
 `
 
 type UpdateTeamParams struct {
-	ID          int64                 `json:"id"`
-	TeamName    string                `json:"team_name"`
-	Currency    string                `json:"currency"`
-	TeamMembers pqtype.NullRawMessage `json:"team_members"`
+	ID          int64  `json:"id"`
+	TeamName    string `json:"team_name"`
+	Currency    string `json:"currency"`
+	TeamMembers []byte `json:"team_members"`
 }
 
 func (q *Queries) UpdateTeam(ctx context.Context, arg UpdateTeamParams) (Team, error) {
-	row := q.db.QueryRowContext(ctx, updateTeam,
+	row := q.db.QueryRow(ctx, updateTeam,
 		arg.ID,
 		arg.TeamName,
 		arg.Currency,

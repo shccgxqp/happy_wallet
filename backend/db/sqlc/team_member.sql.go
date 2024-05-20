@@ -7,7 +7,8 @@ package db
 
 import (
 	"context"
-	"database/sql"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createTeamMember = `-- name: CreateTeamMember :one
@@ -21,13 +22,13 @@ INSERT INTO team_members (
 `
 
 type CreateTeamMemberParams struct {
-	TeamID       sql.NullInt64 `json:"team_id"`
-	MemberName   string        `json:"member_name"`
-	LinkedUserID sql.NullInt64 `json:"linked_user_id"`
+	TeamID       pgtype.Int8 `json:"team_id"`
+	MemberName   string      `json:"member_name"`
+	LinkedUserID pgtype.Int8 `json:"linked_user_id"`
 }
 
 func (q *Queries) CreateTeamMember(ctx context.Context, arg CreateTeamMemberParams) (TeamMember, error) {
-	row := q.db.QueryRowContext(ctx, createTeamMember, arg.TeamID, arg.MemberName, arg.LinkedUserID)
+	row := q.db.QueryRow(ctx, createTeamMember, arg.TeamID, arg.MemberName, arg.LinkedUserID)
 	var i TeamMember
 	err := row.Scan(
 		&i.ID,
@@ -46,7 +47,7 @@ WHERE id = $1
 `
 
 func (q *Queries) GetTeamMemberByID(ctx context.Context, id int64) (TeamMember, error) {
-	row := q.db.QueryRowContext(ctx, getTeamMemberByID, id)
+	row := q.db.QueryRow(ctx, getTeamMemberByID, id)
 	var i TeamMember
 	err := row.Scan(
 		&i.ID,
@@ -64,8 +65,8 @@ SELECT id, team_id, member_name, linked_user_id, created_at, updated_at FROM tea
 WHERE team_id = $1
 `
 
-func (q *Queries) GetTeamMembers(ctx context.Context, teamID sql.NullInt64) ([]TeamMember, error) {
-	rows, err := q.db.QueryContext(ctx, getTeamMembers, teamID)
+func (q *Queries) GetTeamMembers(ctx context.Context, teamID pgtype.Int8) ([]TeamMember, error) {
+	rows, err := q.db.Query(ctx, getTeamMembers, teamID)
 	if err != nil {
 		return nil, err
 	}
@@ -85,9 +86,6 @@ func (q *Queries) GetTeamMembers(ctx context.Context, teamID sql.NullInt64) ([]T
 		}
 		items = append(items, i)
 	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
@@ -104,14 +102,14 @@ RETURNING id, team_id, member_name, linked_user_id, created_at, updated_at
 `
 
 type UpdateTeamMemberParams struct {
-	ID           int64         `json:"id"`
-	TeamID       sql.NullInt64 `json:"team_id"`
-	LinkedUserID sql.NullInt64 `json:"linked_user_id"`
-	MemberName   string        `json:"member_name"`
+	ID           int64       `json:"id"`
+	TeamID       pgtype.Int8 `json:"team_id"`
+	LinkedUserID pgtype.Int8 `json:"linked_user_id"`
+	MemberName   string      `json:"member_name"`
 }
 
 func (q *Queries) UpdateTeamMember(ctx context.Context, arg UpdateTeamMemberParams) (TeamMember, error) {
-	row := q.db.QueryRowContext(ctx, updateTeamMember,
+	row := q.db.QueryRow(ctx, updateTeamMember,
 		arg.ID,
 		arg.TeamID,
 		arg.LinkedUserID,

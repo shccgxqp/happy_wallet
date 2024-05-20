@@ -43,6 +43,7 @@ server:
 
 mock:
 		mockgen -package mockdb -destination db/mock/store.go github.com/shccgxqp/happy_wallet/backend/db/sqlc Store
+		mockgen -package mockwk -destination worker/mock/distributor.go github.com/shccgxqp/happy_wallet/backend/worker TaskDistributor
 
 proto:
 		rm -f pb/*.go

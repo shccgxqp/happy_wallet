@@ -7,7 +7,8 @@ package db
 
 import (
 	"context"
-	"database/sql"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createExpenseDetail = `-- name: CreateExpenseDetail :one
@@ -22,14 +23,14 @@ $1, $2, $3 ,$4
 `
 
 type CreateExpenseDetailParams struct {
-	ExpenseID    sql.NullInt64  `json:"expense_id"`
-	MemberID     sql.NullInt64  `json:"member_id"`
-	ActualAmount sql.NullString `json:"actual_amount"`
-	SharedAmount sql.NullString `json:"shared_amount"`
+	ExpenseID    pgtype.Int8    `json:"expense_id"`
+	MemberID     pgtype.Int8    `json:"member_id"`
+	ActualAmount pgtype.Numeric `json:"actual_amount"`
+	SharedAmount pgtype.Numeric `json:"shared_amount"`
 }
 
 func (q *Queries) CreateExpenseDetail(ctx context.Context, arg CreateExpenseDetailParams) (ExpenseDetail, error) {
-	row := q.db.QueryRowContext(ctx, createExpenseDetail,
+	row := q.db.QueryRow(ctx, createExpenseDetail,
 		arg.ExpenseID,
 		arg.MemberID,
 		arg.ActualAmount,
@@ -52,8 +53,8 @@ const getExpenseDetail = `-- name: GetExpenseDetail :one
 SELECT id, expense_id, member_id, actual_amount, shared_amount, created_at, updated_at FROM expense_details WHERE expense_id = $1
 `
 
-func (q *Queries) GetExpenseDetail(ctx context.Context, expenseID sql.NullInt64) (ExpenseDetail, error) {
-	row := q.db.QueryRowContext(ctx, getExpenseDetail, expenseID)
+func (q *Queries) GetExpenseDetail(ctx context.Context, expenseID pgtype.Int8) (ExpenseDetail, error) {
+	row := q.db.QueryRow(ctx, getExpenseDetail, expenseID)
 	var i ExpenseDetail
 	err := row.Scan(
 		&i.ID,
@@ -77,14 +78,14 @@ RETURNING id, expense_id, member_id, actual_amount, shared_amount, created_at, u
 `
 
 type UpdateExpenseDetailParams struct {
-	ExpenseID    sql.NullInt64  `json:"expense_id"`
-	MemberID     sql.NullInt64  `json:"member_id"`
-	ActualAmount sql.NullString `json:"actual_amount"`
-	SharedAmount sql.NullString `json:"shared_amount"`
+	ExpenseID    pgtype.Int8    `json:"expense_id"`
+	MemberID     pgtype.Int8    `json:"member_id"`
+	ActualAmount pgtype.Numeric `json:"actual_amount"`
+	SharedAmount pgtype.Numeric `json:"shared_amount"`
 }
 
 func (q *Queries) UpdateExpenseDetail(ctx context.Context, arg UpdateExpenseDetailParams) (ExpenseDetail, error) {
-	row := q.db.QueryRowContext(ctx, updateExpenseDetail,
+	row := q.db.QueryRow(ctx, updateExpenseDetail,
 		arg.ExpenseID,
 		arg.MemberID,
 		arg.ActualAmount,

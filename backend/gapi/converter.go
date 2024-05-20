@@ -10,7 +10,7 @@ func convertUser(user db.User) *pb.User {
 	return &pb.User{
 		Username:  user.Username,
 		Email:     user.Email,
-		CreatedAt: timestamppb.New(user.CreatedAt),
-		UpdatedAt: timestamppb.New(user.UpdatedAt),
+		CreatedAt: timestamppb.New(user.CreatedAt.Time),
+		UpdatedAt: timestamppb.New(user.UpdatedAt.Time),
 	}
 }

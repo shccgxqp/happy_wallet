@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"testing"
 	"time"
@@ -19,7 +18,7 @@ func createRandomTeam(t *testing.T, userID int64) Team {
 		TeamMembers: util.RandomTeamMembers(3),
 	}
 
-	team, err := testQueries.CreateTeam(context.Background(), arg)
+	team, err := testStore.CreateTeam(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, team)
 
@@ -29,7 +28,7 @@ func createRandomTeam(t *testing.T, userID int64) Team {
 func TestGetTeam(t *testing.T) {
 	user := createRandomUser(t)
 	team1 := createRandomTeam(t, user.ID)
-	team2, err := testQueries.GetTeam(context.Background(), team1.ID)
+	team2, err := testStore.GetTeam(context.Background(), team1.ID)
 	require.NoError(t, err)
 	require.Equal(t, team1, team2)
 }
@@ -45,7 +44,7 @@ func TestUpdateTeam(t *testing.T) {
 		TeamMembers: util.RandomTeamMembers(3),
 	}
 
-	team2, err := testQueries.UpdateTeam(context.Background(), arg)
+	team2, err := testStore.UpdateTeam(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, team2)
 
@@ -53,26 +52,30 @@ func TestUpdateTeam(t *testing.T) {
 	require.Equal(t, arg.TeamName, team2.TeamName)
 	require.Equal(t, arg.Currency, team2.Currency)
 
-	expectedMembers, err := json.Marshal(arg.TeamMembers)
-	require.NoError(t, err)
-	actualMembers, err := json.Marshal(team2.TeamMembers)
-	require.NoError(t, err)
-	require.JSONEq(t, string(expectedMembers), string(actualMembers))
+	var expectedMembers []string
+	var actualMembers []string
 
-	require.WithinDuration(t, team1.CreatedAt, team2.CreatedAt, time.Second)
-	require.WithinDuration(t, team1.UpdatedAt, team2.UpdatedAt, time.Second)
+	err = json.Unmarshal(arg.TeamMembers, &expectedMembers)
+	require.NoError(t, err)
+	err = json.Unmarshal(team2.TeamMembers, &actualMembers)
+	require.NoError(t, err)
+
+	require.ElementsMatch(t, expectedMembers, actualMembers)
+
+	require.WithinDuration(t, team1.CreatedAt.Time, team2.CreatedAt.Time, time.Second)
+	require.WithinDuration(t, team1.UpdatedAt.Time, team2.UpdatedAt.Time, time.Second)
 }
 
 func TestDeleteTeam(t *testing.T) {
 	user := createRandomUser(t)
 	team1 := createRandomTeam(t, user.ID)
-	err := testQueries.DeleteTeam(context.Background(), team1.ID)
+	err := testStore.DeleteTeam(context.Background(), team1.ID)
 	require.NoError(t, err)
 
-	team2, err := testQueries.GetTeam(context.Background(), team1.ID)
+	team2, err := testStore.GetTeam(context.Background(), team1.ID)
 	require.Error(t, err)
 	require.Empty(t, team2)
-	require.EqualError(t, err, sql.ErrNoRows.Error())
+	require.EqualError(t, err, ErrRecordNotFound.Error())
 }
 
 func TestListTeam(t *testing.T) {
@@ -86,7 +89,7 @@ func TestListTeam(t *testing.T) {
 		Offset: 5,
 	}
 
-	teams, err := testQueries.ListTeams(context.Background(), arg)
+	teams, err := testStore.ListTeams(context.Background(), arg)
 	require.NoError(t, err)
 	require.Len(t, teams, 5)
 

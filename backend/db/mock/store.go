@@ -11,10 +11,10 @@ package mockdb
 
 import (
 	context "context"
-	sql "database/sql"
 	reflect "reflect"
 
 	uuid "github.com/google/uuid"
+	pgtype "github.com/jackc/pgx/v5/pgtype"
 	db "github.com/shccgxqp/happy_wallet/backend/db/sqlc"
 	gomock "go.uber.org/mock/gomock"
 )
@@ -206,7 +206,7 @@ func (mr *MockStoreMockRecorder) GetExpense(arg0, arg1 any) *gomock.Call {
 }
 
 // GetExpenseDetail mocks base method.
-func (m *MockStore) GetExpenseDetail(arg0 context.Context, arg1 sql.NullInt64) (db.ExpenseDetail, error) {
+func (m *MockStore) GetExpenseDetail(arg0 context.Context, arg1 pgtype.Int8) (db.ExpenseDetail, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetExpenseDetail", arg0, arg1)
 	ret0, _ := ret[0].(db.ExpenseDetail)
@@ -266,7 +266,7 @@ func (mr *MockStoreMockRecorder) GetTeamMemberByID(arg0, arg1 any) *gomock.Call 
 }
 
 // GetTeamMembers mocks base method.
-func (m *MockStore) GetTeamMembers(arg0 context.Context, arg1 sql.NullInt64) ([]db.TeamMember, error) {
+func (m *MockStore) GetTeamMembers(arg0 context.Context, arg1 pgtype.Int8) ([]db.TeamMember, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTeamMembers", arg0, arg1)
 	ret0, _ := ret[0].([]db.TeamMember)
@@ -311,7 +311,7 @@ func (mr *MockStoreMockRecorder) GetUserByEmail(arg0, arg1 any) *gomock.Call {
 }
 
 // ListExpenses mocks base method.
-func (m *MockStore) ListExpenses(arg0 context.Context, arg1 sql.NullInt64) ([]db.Expense, error) {
+func (m *MockStore) ListExpenses(arg0 context.Context, arg1 pgtype.Int8) ([]db.Expense, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListExpenses", arg0, arg1)
 	ret0, _ := ret[0].([]db.Expense)

@@ -5,32 +5,31 @@
 package db
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/sqlc-dev/pqtype"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Expense struct {
-	ID            int64         `json:"id"`
-	TeamID        sql.NullInt64 `json:"team_id"`
-	Goal          string        `json:"goal"`
-	Amount        string        `json:"amount"`
-	Currency      string        `json:"currency"`
-	SharingMethod string        `json:"sharing_method"`
-	CreatedAt     time.Time     `json:"created_at"`
-	UpdatedAt     time.Time     `json:"updated_at"`
+	ID            int64            `json:"id"`
+	TeamID        pgtype.Int8      `json:"team_id"`
+	Goal          string           `json:"goal"`
+	Amount        pgtype.Numeric   `json:"amount"`
+	Currency      string           `json:"currency"`
+	SharingMethod string           `json:"sharing_method"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
+	UpdatedAt     pgtype.Timestamp `json:"updated_at"`
 }
 
 type ExpenseDetail struct {
-	ID           int64          `json:"id"`
-	ExpenseID    sql.NullInt64  `json:"expense_id"`
-	MemberID     sql.NullInt64  `json:"member_id"`
-	ActualAmount sql.NullString `json:"actual_amount"`
-	SharedAmount sql.NullString `json:"shared_amount"`
-	CreatedAt    time.Time      `json:"created_at"`
-	UpdatedAt    time.Time      `json:"updated_at"`
+	ID           int64            `json:"id"`
+	ExpenseID    pgtype.Int8      `json:"expense_id"`
+	MemberID     pgtype.Int8      `json:"member_id"`
+	ActualAmount pgtype.Numeric   `json:"actual_amount"`
+	SharedAmount pgtype.Numeric   `json:"shared_amount"`
+	CreatedAt    pgtype.Timestamp `json:"created_at"`
+	UpdatedAt    pgtype.Timestamp `json:"updated_at"`
 }
 
 type Session struct {
@@ -46,41 +45,41 @@ type Session struct {
 }
 
 type Team struct {
-	ID          int64                 `json:"id"`
-	Owner       int64                 `json:"owner"`
-	TeamName    string                `json:"team_name"`
-	Currency    string                `json:"currency"`
-	TeamMembers pqtype.NullRawMessage `json:"team_members"`
-	CreatedAt   time.Time             `json:"created_at"`
-	UpdatedAt   time.Time             `json:"updated_at"`
+	ID          int64            `json:"id"`
+	Owner       int64            `json:"owner"`
+	TeamName    string           `json:"team_name"`
+	Currency    string           `json:"currency"`
+	TeamMembers []byte           `json:"team_members"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
+	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 }
 
 type TeamMember struct {
-	ID           int64         `json:"id"`
-	TeamID       sql.NullInt64 `json:"team_id"`
-	MemberName   string        `json:"member_name"`
-	LinkedUserID sql.NullInt64 `json:"linked_user_id"`
-	CreatedAt    time.Time     `json:"created_at"`
-	UpdatedAt    time.Time     `json:"updated_at"`
+	ID           int64            `json:"id"`
+	TeamID       pgtype.Int8      `json:"team_id"`
+	MemberName   string           `json:"member_name"`
+	LinkedUserID pgtype.Int8      `json:"linked_user_id"`
+	CreatedAt    pgtype.Timestamp `json:"created_at"`
+	UpdatedAt    pgtype.Timestamp `json:"updated_at"`
 }
 
 type User struct {
-	ID               int64     `json:"id"`
-	Username         string    `json:"username"`
-	Email            string    `json:"email"`
-	Password         string    `json:"password"`
-	CreatedAt        time.Time `json:"created_at"`
-	UpdatedAt        time.Time `json:"updated_at"`
-	IsEmailVerified  bool      `json:"is_email_verified"`
-	PasswordChangeAt time.Time `json:"password_change_at"`
+	ID               int64            `json:"id"`
+	Username         string           `json:"username"`
+	Email            string           `json:"email"`
+	Password         string           `json:"password"`
+	CreatedAt        pgtype.Timestamp `json:"created_at"`
+	UpdatedAt        pgtype.Timestamp `json:"updated_at"`
+	IsEmailVerified  bool             `json:"is_email_verified"`
+	PasswordChangeAt time.Time        `json:"password_change_at"`
 }
 
 type VerifyEmail struct {
-	ID         int64     `json:"id"`
-	UserID     int64     `json:"user_id"`
-	Email      string    `json:"email"`
-	SecretCode string    `json:"secret_code"`
-	IsUsed     bool      `json:"is_used"`
-	CreatedAt  time.Time `json:"created_at"`
-	ExpiredAt  time.Time `json:"expired_at"`
+	ID         int64            `json:"id"`
+	UserID     int64            `json:"user_id"`
+	Email      string           `json:"email"`
+	SecretCode string           `json:"secret_code"`
+	IsUsed     bool             `json:"is_used"`
+	CreatedAt  pgtype.Timestamp `json:"created_at"`
+	ExpiredAt  pgtype.Timestamp `json:"expired_at"`
 }
