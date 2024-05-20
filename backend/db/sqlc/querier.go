@@ -6,9 +6,9 @@ package db
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
@@ -18,17 +18,18 @@ type Querier interface {
 	CreateTeam(ctx context.Context, arg CreateTeamParams) (Team, error)
 	CreateTeamMember(ctx context.Context, arg CreateTeamMemberParams) (TeamMember, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
 	DeleteTeam(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
 	GetExpense(ctx context.Context, id int64) (Expense, error)
-	GetExpenseDetail(ctx context.Context, expenseID sql.NullInt64) (ExpenseDetail, error)
+	GetExpenseDetail(ctx context.Context, expenseID pgtype.Int8) (ExpenseDetail, error)
 	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetTeam(ctx context.Context, id int64) (Team, error)
 	GetTeamMemberByID(ctx context.Context, id int64) (TeamMember, error)
-	GetTeamMembers(ctx context.Context, teamID sql.NullInt64) ([]TeamMember, error)
+	GetTeamMembers(ctx context.Context, teamID pgtype.Int8) ([]TeamMember, error)
 	GetUser(ctx context.Context, username string) (User, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
-	ListExpenses(ctx context.Context, teamID sql.NullInt64) ([]Expense, error)
+	ListExpenses(ctx context.Context, teamID pgtype.Int8) ([]Expense, error)
 	ListTeams(ctx context.Context, arg ListTeamsParams) ([]Team, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
 	UpdateExpense(ctx context.Context, arg UpdateExpenseParams) (Expense, error)
@@ -36,6 +37,7 @@ type Querier interface {
 	UpdateTeam(ctx context.Context, arg UpdateTeamParams) (Team, error)
 	UpdateTeamMember(ctx context.Context, arg UpdateTeamMemberParams) (TeamMember, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
+	UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error)
 }
 
 var _ Querier = (*Queries)(nil)

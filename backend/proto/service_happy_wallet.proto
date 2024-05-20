@@ -6,20 +6,21 @@ import "google/api/annotations.proto";
 import "rpc_update_user.proto";
 import "rpc_create_user.proto";
 import "rpc_login_user.proto";
+import "rpc_verify_email.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 option go_package = "github.com/shccgxqp/happy_wallet/backend/pb";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
-      info: {
-        title: "Happy Wallet API";
-        version: "1.0";
-        contact: {
-            name: "Wang Yuan Chen";
-            url: "https://github.com/shccgxqp";
-            email: "shccgxqp@gmail.com";
-        };
+  info: {
+    title: "Happy Wallet API";
+    version: "1.0";
+    contact: {
+      name: "Wang Yuan Chen";
+      url: "https://github.com/shccgxqp";
+      email: "shccgxqp@gmail.com";
     };
+};
 };
 
 service HappyWallet {
@@ -29,8 +30,8 @@ service HappyWallet {
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-    description: "Use this API to create a new user";
-    summary: "Update user";
+      description: "Use this API to create a new user";
+      summary: "Update user";
     };
   }
 
@@ -41,8 +42,8 @@ service HappyWallet {
     } ;
 
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-    description: "Use this API to update user information";
-    summary: "Update user";
+      description: "Use this API to update user information";
+      summary: "Update user";
     };
   }
 
@@ -53,9 +54,19 @@ service HappyWallet {
     } ;
 
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-    description: "Use this API to login user and get access token & refresh token";
-    summary: "Login user";
+      description: "Use this API to login user and get access token & refresh token";
+      summary: "Login user";
     };
+  }
+
+  rpc VerifyEmail (VerifyEmailRequest) returns (VerifyEmailResponse) {
+      option (google.api.http) = {
+        get: "/v1/verify_email"
+      };
+      option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        description: "Use this API to verify user's email address";
+        summary: "Verify email";
+      };
   }
 
 }

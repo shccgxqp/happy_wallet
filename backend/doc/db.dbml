@@ -3,17 +3,29 @@ Project happy_wallet {
   Note: 'This is the database schema for happy_wallet'
 }
 
-// 帳戶表
 Table users as U {
   id bigserial [pk]
   username varchar [not null]
-  email varchar [unique, not null]
   password varchar [not null]
+  email varchar [unique, not null]
+  is_email_verified boolean [not null, default: false]
+  password_change_at timestamp [not null, default: '0001-01-01']
   created_at timestamp [not null, default: `now()`]
   updated_at timestamp [not null, default: `now()`]
 }
 
-// 群組表
+Table verify_emails as VE {
+  id bigserial [pk]
+  user_id bigint [not null]
+  email varchar [not null]
+  secret_code varchar [not null]
+  is_used bool [not null, default: false]
+  created_at timestamp [not null, default: `now()`]
+  expired_at timestamp [not null, default: `now() + interval '15 minutes'`]
+}
+
+Ref: VE.user_id > U.id
+
 Table teams as T {
   id bigserial [pk]
   owner bigserial [not null]
@@ -26,7 +38,6 @@ Table teams as T {
 
 Ref: T.owner > U.id
 
-// 群組成員表
 Table team_members as TM{
   id bigserial [pk]
   team_id bigint  
@@ -39,7 +50,6 @@ Table team_members as TM{
 Ref: TM.team_id > T.id [delete: cascade]
 Ref: TM.linked_user_id > U.id
 
-// 消費紀錄表
 Table expenses as E {
   id bigserial [pk]
   team_id bigint   
@@ -69,6 +79,7 @@ Ref: ED.expense_id > E.id [delete: cascade]
 Table sessions as S {
   id uuid [pk]
   user_id bigint [not null]
+  username varchar [not null]
   refresh_token varchar [not null]
   user_agent varchar [not null]
   client_ip varchar [not null]

@@ -7,7 +7,8 @@ package db
 
 import (
 	"context"
-	"database/sql"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createExpense = `-- name: CreateExpense :one
@@ -23,15 +24,15 @@ $1, $2, $3 ,$4 ,$5
 `
 
 type CreateExpenseParams struct {
-	TeamID        sql.NullInt64 `json:"team_id"`
-	Goal          string        `json:"goal"`
-	Amount        string        `json:"amount"`
-	Currency      string        `json:"currency"`
-	SharingMethod string        `json:"sharing_method"`
+	TeamID        pgtype.Int8    `json:"team_id"`
+	Goal          string         `json:"goal"`
+	Amount        pgtype.Numeric `json:"amount"`
+	Currency      string         `json:"currency"`
+	SharingMethod string         `json:"sharing_method"`
 }
 
 func (q *Queries) CreateExpense(ctx context.Context, arg CreateExpenseParams) (Expense, error) {
-	row := q.db.QueryRowContext(ctx, createExpense,
+	row := q.db.QueryRow(ctx, createExpense,
 		arg.TeamID,
 		arg.Goal,
 		arg.Amount,
@@ -57,7 +58,7 @@ SELECT id, team_id, goal, amount, currency, sharing_method, created_at, updated_
 `
 
 func (q *Queries) GetExpense(ctx context.Context, id int64) (Expense, error) {
-	row := q.db.QueryRowContext(ctx, getExpense, id)
+	row := q.db.QueryRow(ctx, getExpense, id)
 	var i Expense
 	err := row.Scan(
 		&i.ID,
@@ -76,8 +77,8 @@ const listExpenses = `-- name: ListExpenses :many
 SELECT id, team_id, goal, amount, currency, sharing_method, created_at, updated_at FROM expenses WHERE team_id = $1
 `
 
-func (q *Queries) ListExpenses(ctx context.Context, teamID sql.NullInt64) ([]Expense, error) {
-	rows, err := q.db.QueryContext(ctx, listExpenses, teamID)
+func (q *Queries) ListExpenses(ctx context.Context, teamID pgtype.Int8) ([]Expense, error) {
+	rows, err := q.db.Query(ctx, listExpenses, teamID)
 	if err != nil {
 		return nil, err
 	}
@@ -99,9 +100,6 @@ func (q *Queries) ListExpenses(ctx context.Context, teamID sql.NullInt64) ([]Exp
 		}
 		items = append(items, i)
 	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
@@ -118,15 +116,15 @@ WHERE id = $1 RETURNING id, team_id, goal, amount, currency, sharing_method, cre
 `
 
 type UpdateExpenseParams struct {
-	ID            int64  `json:"id"`
-	Goal          string `json:"goal"`
-	Amount        string `json:"amount"`
-	Currency      string `json:"currency"`
-	SharingMethod string `json:"sharing_method"`
+	ID            int64          `json:"id"`
+	Goal          string         `json:"goal"`
+	Amount        pgtype.Numeric `json:"amount"`
+	Currency      string         `json:"currency"`
+	SharingMethod string         `json:"sharing_method"`
 }
 
 func (q *Queries) UpdateExpense(ctx context.Context, arg UpdateExpenseParams) (Expense, error) {
-	row := q.db.QueryRowContext(ctx, updateExpense,
+	row := q.db.QueryRow(ctx, updateExpense,
 		arg.ID,
 		arg.Goal,
 		arg.Amount,

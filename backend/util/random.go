@@ -6,8 +6,6 @@ import (
 	"math/rand"
 	"strings"
 	"time"
-
-	"github.com/sqlc-dev/pqtype"
 )
 
 const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -66,17 +64,14 @@ func RandomCurrency() string {
 }
 
 // RandomTeamMembers 生成隨機團隊成員 JSON 資料
-func RandomTeamMembers(num int) pqtype.NullRawMessage {
+func RandomTeamMembers(num int) []byte {
 	members := make([]string, num)
 	for i := 0; i < num; i++ {
 		members[i] = RandomUsername()
 	}
 	data, err := json.Marshal(members)
 	if err != nil {
-		return pqtype.NullRawMessage{}
+		return nil
 	}
-	return pqtype.NullRawMessage{
-		RawMessage: json.RawMessage(data),
-		Valid:      true,
-	}
+	return data
 }

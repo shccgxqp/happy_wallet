@@ -7,13 +7,13 @@ import (
 	"github.com/gin-gonic/gin"
 	db "github.com/shccgxqp/happy_wallet/backend/db/sqlc"
 	"github.com/shccgxqp/happy_wallet/backend/token"
-	"github.com/sqlc-dev/pqtype"
 )
 
 type createTeamRequest struct {
-	Name         string                `json:"name" binding:"required"`
-	Currency     string                `json:"currency" binding:"required"`
-	Team_members pqtype.NullRawMessage `json:"team_members" binding:"required"`
+	Owner        int64  `json:"owner" binding:"required"`
+	Name         string `json:"name" binding:"required"`
+	Currency     string `json:"currency" binding:"required"`
+	Team_members []byte `json:"team_members" binding:"required"`
 }
 
 func (server *Server) createTeam(ctx *gin.Context) {
@@ -24,10 +24,17 @@ func (server *Server) createTeam(ctx *gin.Context) {
 	}
 
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	teamMembersJSON, err := json.Marshal(authPayload.ID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
 	arg := db.CreateTeamParams{
+		Owner:       req.Owner,
 		TeamName:    req.Name,
 		Currency:    req.Currency,
-		TeamMembers: pqtype.NullRawMessage{RawMessage: json.RawMessage(authPayload.ID.String()), Valid: true},
+		TeamMembers: teamMembersJSON,
 	}
 
 	team, err := server.store.CreateTeam(ctx, arg)

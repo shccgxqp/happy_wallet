@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	HappyWallet_CreateUser_FullMethodName = "/pb.HappyWallet/CreateUser"
-	HappyWallet_UpdateUser_FullMethodName = "/pb.HappyWallet/UpdateUser"
-	HappyWallet_LoginUser_FullMethodName  = "/pb.HappyWallet/LoginUser"
+	HappyWallet_CreateUser_FullMethodName  = "/pb.HappyWallet/CreateUser"
+	HappyWallet_UpdateUser_FullMethodName  = "/pb.HappyWallet/UpdateUser"
+	HappyWallet_LoginUser_FullMethodName   = "/pb.HappyWallet/LoginUser"
+	HappyWallet_VerifyEmail_FullMethodName = "/pb.HappyWallet/VerifyEmail"
 )
 
 // HappyWalletClient is the client API for HappyWallet service.
@@ -31,6 +32,7 @@ type HappyWalletClient interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	LoginUser(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error)
+	VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...grpc.CallOption) (*VerifyEmailResponse, error)
 }
 
 type happyWalletClient struct {
@@ -68,6 +70,15 @@ func (c *happyWalletClient) LoginUser(ctx context.Context, in *LoginUserRequest,
 	return out, nil
 }
 
+func (c *happyWalletClient) VerifyEmail(ctx context.Context, in *VerifyEmailRequest, opts ...grpc.CallOption) (*VerifyEmailResponse, error) {
+	out := new(VerifyEmailResponse)
+	err := c.cc.Invoke(ctx, HappyWallet_VerifyEmail_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // HappyWalletServer is the server API for HappyWallet service.
 // All implementations must embed UnimplementedHappyWalletServer
 // for forward compatibility
@@ -75,6 +86,7 @@ type HappyWalletServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error)
+	VerifyEmail(context.Context, *VerifyEmailRequest) (*VerifyEmailResponse, error)
 	mustEmbedUnimplementedHappyWalletServer()
 }
 
@@ -90,6 +102,9 @@ func (UnimplementedHappyWalletServer) UpdateUser(context.Context, *UpdateUserReq
 }
 func (UnimplementedHappyWalletServer) LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginUser not implemented")
+}
+func (UnimplementedHappyWalletServer) VerifyEmail(context.Context, *VerifyEmailRequest) (*VerifyEmailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyEmail not implemented")
 }
 func (UnimplementedHappyWalletServer) mustEmbedUnimplementedHappyWalletServer() {}
 
@@ -158,6 +173,24 @@ func _HappyWallet_LoginUser_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HappyWallet_VerifyEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyEmailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HappyWalletServer).VerifyEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HappyWallet_VerifyEmail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HappyWalletServer).VerifyEmail(ctx, req.(*VerifyEmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // HappyWallet_ServiceDesc is the grpc.ServiceDesc for HappyWallet service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +209,10 @@ var HappyWallet_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LoginUser",
 			Handler:    _HappyWallet_LoginUser_Handler,
+		},
+		{
+			MethodName: "VerifyEmail",
+			Handler:    _HappyWallet_VerifyEmail_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

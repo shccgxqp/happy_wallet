@@ -2,27 +2,27 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"testing"
 
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/shccgxqp/happy_wallet/backend/util"
 	"github.com/stretchr/testify/require"
 )
 
 func createRandomTeamMembers(t *testing.T, team Team) []TeamMember {
 	var members []string
-	json.Unmarshal(team.TeamMembers.RawMessage, &members)
+	json.Unmarshal(team.TeamMembers, &members)
 	teamMembers := make([]TeamMember, 0, len(members))
 
 	for _, member := range members {
 		arg := CreateTeamMemberParams{
-			TeamID:       sql.NullInt64{Int64: team.ID, Valid: true},
+			TeamID:       pgtype.Int8{Int64: team.ID, Valid: true},
 			MemberName:   string(member),
-			LinkedUserID: sql.NullInt64{},
+			LinkedUserID: pgtype.Int8{},
 		}
 
-		TeamMember, err := testQueries.CreateTeamMember(context.Background(), arg)
+		TeamMember, err := testStore.CreateTeamMember(context.Background(), arg)
 		teamMembers = append(teamMembers, TeamMember)
 
 		require.NoError(t, err)
@@ -46,8 +46,8 @@ func TestGetTeamMembers(t *testing.T) {
 	team := createRandomTeam(t, user.ID)
 	createRandomTeamMembers(t, team)
 
-	teamID := sql.NullInt64{Int64: team.ID, Valid: true}
-	members, err := testQueries.GetTeamMembers(context.Background(), teamID)
+	teamID := pgtype.Int8{Int64: team.ID, Valid: true}
+	members, err := testStore.GetTeamMembers(context.Background(), teamID)
 	require.NoError(t, err)
 	require.NotEmpty(t, members)
 }
@@ -60,11 +60,11 @@ func TestUpdateTeamMember(t *testing.T) {
 	for _, member := range members {
 		arg := UpdateTeamMemberParams{
 			ID:         member.ID,
-			TeamID:     sql.NullInt64{Int64: team.ID, Valid: true},
+			TeamID:     pgtype.Int8{Int64: team.ID, Valid: true},
 			MemberName: util.RandomUsername(),
 		}
 
-		TeamMember, err := testQueries.UpdateTeamMember(context.Background(), arg)
+		TeamMember, err := testStore.UpdateTeamMember(context.Background(), arg)
 		require.NoError(t, err)
 		require.NotEmpty(t, TeamMember)
 		require.Equal(t, arg.MemberName, TeamMember.MemberName)

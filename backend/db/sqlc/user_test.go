@@ -2,10 +2,10 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"testing"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/shccgxqp/happy_wallet/backend/util"
 	"github.com/stretchr/testify/require"
 )
@@ -20,7 +20,7 @@ func createRandomUser(t *testing.T) User {
 		Email:    util.RandomEmail(),
 	}
 
-	user, err := testQueries.CreateUser(context.Background(), arg)
+	user, err := testStore.CreateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
 
@@ -41,7 +41,7 @@ func TestCreateUser(t *testing.T) {
 
 func TestGetUser(t *testing.T) {
 	user1 := createRandomUser(t)
-	user2, err := testQueries.GetUser(context.Background(), user1.Username)
+	user2, err := testStore.GetUser(context.Background(), user1.Username)
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 
@@ -49,8 +49,8 @@ func TestGetUser(t *testing.T) {
 	require.Equal(t, user1.Username, user2.Username)
 	require.Equal(t, user1.Password, user2.Password)
 	require.Equal(t, user1.Email, user2.Email)
-	require.WithinDuration(t, user1.CreatedAt, user2.CreatedAt, time.Second)
-	require.WithinDuration(t, user1.UpdatedAt, user2.UpdatedAt, time.Second)
+	require.WithinDuration(t, user1.CreatedAt.Time, user2.CreatedAt.Time, time.Second)
+	require.WithinDuration(t, user1.UpdatedAt.Time, user2.UpdatedAt.Time, time.Second)
 }
 
 func TestUpdateUser(t *testing.T) {
@@ -62,17 +62,17 @@ func TestUpdateUser(t *testing.T) {
 	newHashedPassword, err := util.HashPassword(newPassword)
 	require.NoError(t, err)
 
-	updatedUser, err := testQueries.UpdateUser(context.Background(), UpdateUserParams{
+	updatedUser, err := testStore.UpdateUser(context.Background(), UpdateUserParams{
 		ID: oldUser.ID,
-		Username: sql.NullString{
+		Username: pgtype.Text{
 			String: newUsername,
 			Valid:  true,
 		},
-		Password: sql.NullString{
+		Password: pgtype.Text{
 			String: newHashedPassword,
 			Valid:  true,
 		},
-		Email: sql.NullString{
+		Email: pgtype.Text{
 			String: newEmail,
 			Valid:  true,
 		},
@@ -91,9 +91,9 @@ func TestUpdateUserOnlyUsername(t *testing.T) {
 	oldUser := createRandomUser(t)
 
 	newUsername := util.RandomUsername()
-	updatedUser, err := testQueries.UpdateUser(context.Background(), UpdateUserParams{
+	updatedUser, err := testStore.UpdateUser(context.Background(), UpdateUserParams{
 		ID: oldUser.ID,
-		Username: sql.NullString{
+		Username: pgtype.Text{
 			String: newUsername,
 			Valid:  true,
 		},
@@ -110,9 +110,9 @@ func TestUpdateUserOnlyEmail(t *testing.T) {
 	oldUser := createRandomUser(t)
 
 	newEmail := util.RandomEmail()
-	updatedUser, err := testQueries.UpdateUser(context.Background(), UpdateUserParams{
+	updatedUser, err := testStore.UpdateUser(context.Background(), UpdateUserParams{
 		ID: oldUser.ID,
-		Email: sql.NullString{
+		Email: pgtype.Text{
 			String: newEmail,
 			Valid:  true,
 		},
@@ -132,9 +132,9 @@ func TestUpdateUserOnlyPassword(t *testing.T) {
 	newHashedPassword, err := util.HashPassword(newPassword)
 	require.NoError(t, err)
 
-	updatedUser, err := testQueries.UpdateUser(context.Background(), UpdateUserParams{
+	updatedUser, err := testStore.UpdateUser(context.Background(), UpdateUserParams{
 		ID: oldUser.ID,
-		Password: sql.NullString{
+		Password: pgtype.Text{
 			String: newHashedPassword,
 			Valid:  true,
 		},
@@ -149,12 +149,12 @@ func TestUpdateUserOnlyPassword(t *testing.T) {
 
 func TestDeleteUser(t *testing.T) {
 	user1 := createRandomUser(t)
-	err := testQueries.DeleteUser(context.Background(), user1.ID)
+	err := testStore.DeleteUser(context.Background(), user1.ID)
 	require.NoError(t, err)
 
-	user2, err := testQueries.GetUser(context.Background(), user1.Username)
+	user2, err := testStore.GetUser(context.Background(), user1.Username)
 	require.Error(t, err)
-	require.EqualError(t, err, sql.ErrNoRows.Error())
+	require.EqualError(t, err, ErrRecordNotFound.Error())
 	require.Empty(t, user2)
 }
 
@@ -168,7 +168,7 @@ func TestListUsers(t *testing.T) {
 		Offset: 5,
 	}
 
-	users, err := testQueries.ListUsers(context.Background(), arg)
+	users, err := testStore.ListUsers(context.Background(), arg)
 	require.NoError(t, err)
 	require.Len(t, users, 5)
 

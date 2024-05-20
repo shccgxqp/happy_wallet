@@ -7,7 +7,8 @@ package db
 
 import (
 	"context"
-	"database/sql"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -17,7 +18,7 @@ password,
 email 
 ) VALUES (
   $1, $2, $3
-) RETURNING id, username, email, password, created_at, updated_at
+) RETURNING id, username, email, password, created_at, updated_at, is_email_verified, password_change_at
 `
 
 type CreateUserParams struct {
@@ -27,7 +28,7 @@ type CreateUserParams struct {
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser, arg.Username, arg.Password, arg.Email)
+	row := q.db.QueryRow(ctx, createUser, arg.Username, arg.Password, arg.Email)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -36,6 +37,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.IsEmailVerified,
+		&i.PasswordChangeAt,
 	)
 	return i, err
 }
@@ -45,17 +48,17 @@ DELETE FROM users WHERE id = $1
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteUser, id)
+	_, err := q.db.Exec(ctx, deleteUser, id)
 	return err
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, username, email, password, created_at, updated_at FROM users
+SELECT id, username, email, password, created_at, updated_at, is_email_verified, password_change_at FROM users
 WHERE username = $1 LIMIT 1
 `
 
 func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUser, username)
+	row := q.db.QueryRow(ctx, getUser, username)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -64,17 +67,19 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.IsEmailVerified,
+		&i.PasswordChangeAt,
 	)
 	return i, err
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, username, email, password, created_at, updated_at FROM users
+SELECT id, username, email, password, created_at, updated_at, is_email_verified, password_change_at FROM users
 WHERE email = $1 LIMIT 1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
+	row := q.db.QueryRow(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -83,12 +88,14 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.IsEmailVerified,
+		&i.PasswordChangeAt,
 	)
 	return i, err
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, username, email, password, created_at, updated_at FROM users
+SELECT id, username, email, password, created_at, updated_at, is_email_verified, password_change_at FROM users
 ORDER BY id
 LIMIT $1 
 OFFSET $2
@@ -100,7 +107,7 @@ type ListUsersParams struct {
 }
 
 func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, listUsers, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listUsers, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -115,13 +122,12 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 			&i.Password,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.IsEmailVerified,
+			&i.PasswordChangeAt,
 		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -135,26 +141,29 @@ SET
   username = COALESCE($1, username),
   password = COALESCE($2, password),
   email = COALESCE($3, email),
-  updated_at = COALESCE($4, updated_at)
+  updated_at = COALESCE($4, updated_at),
+  is_email_verified = COALESCE($5, is_email_verified)
 WHERE 
-  id = $5
-RETURNING id, username, email, password, created_at, updated_at
+  id = $6
+RETURNING id, username, email, password, created_at, updated_at, is_email_verified, password_change_at
 `
 
 type UpdateUserParams struct {
-	Username  sql.NullString `json:"username"`
-	Password  sql.NullString `json:"password"`
-	Email     sql.NullString `json:"email"`
-	UpdatedAt sql.NullTime   `json:"updated_at"`
-	ID        int64          `json:"id"`
+	Username        pgtype.Text      `json:"username"`
+	Password        pgtype.Text      `json:"password"`
+	Email           pgtype.Text      `json:"email"`
+	UpdatedAt       pgtype.Timestamp `json:"updated_at"`
+	IsEmailVerified pgtype.Bool      `json:"is_email_verified"`
+	ID              int64            `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateUser,
+	row := q.db.QueryRow(ctx, updateUser,
 		arg.Username,
 		arg.Password,
 		arg.Email,
 		arg.UpdatedAt,
+		arg.IsEmailVerified,
 		arg.ID,
 	)
 	var i User
@@ -165,6 +174,8 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.IsEmailVerified,
+		&i.PasswordChangeAt,
 	)
 	return i, err
 }
