@@ -26,7 +26,7 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 			return nil, status.Errorf(codes.NotFound, "user not found")
 		}
 
-		return nil, status.Errorf(codes.Internal, "internal error")
+		return nil, status.Errorf(codes.Internal, "internal error ")
 	}
 
 	err = util.CheckPassword(req.Password, user.Password)
@@ -54,6 +54,7 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 	session, err := server.store.CreateSession(ctx, db.CreateSessionParams{
 		ID:           refreshPayload.ID,
 		UserID:       user.ID,
+		Username:     user.Username,
 		RefreshToken: refreshToken,
 		UserAgent:    mtdt.UserAgent,
 		ClientIp:     mtdt.ClientIP,
@@ -61,7 +62,7 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 		ExpiresAt:    refreshPayload.ExpiredAt,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to create session")
+		return nil, status.Errorf(codes.Internal, "failed to create session: %v", err)
 	}
 
 	rsp := &pb.LoginUserResponse{

@@ -16,19 +16,21 @@ const createSession = `-- name: CreateSession :one
 INSERT INTO sessions (
   id,
   user_id,
+  username,
   refresh_token,
   user_agent,
   client_ip,
   is_blocked,
   expires_at
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7
+  $1, $2, $3, $4, $5, $6, $7, $8
 ) RETURNING id, user_id, refresh_token, user_agent, client_ip, is_blocked, expires_at, created_at, username
 `
 
 type CreateSessionParams struct {
 	ID           uuid.UUID `json:"id"`
 	UserID       int64     `json:"user_id"`
+	Username     string    `json:"username"`
 	RefreshToken string    `json:"refresh_token"`
 	UserAgent    string    `json:"user_agent"`
 	ClientIp     string    `json:"client_ip"`
@@ -40,6 +42,7 @@ func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (S
 	row := q.db.QueryRow(ctx, createSession,
 		arg.ID,
 		arg.UserID,
+		arg.Username,
 		arg.RefreshToken,
 		arg.UserAgent,
 		arg.ClientIp,
