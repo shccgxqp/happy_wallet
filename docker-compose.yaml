@@ -7,6 +7,11 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=happy_wallet
+    volumes:
+      - data-volume:/var/lib/postgresql/data
+  
+  redis:
+    image: redis:7.2-alpine
 
   backend:
     image: happy-wallet-backend
@@ -15,10 +20,13 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8080:8080
+      - 9090:9090
     environment:
       - DB_SOURCE=postgresql://root:secret@postgres:5432/happy_wallet?sslmode=disable
+      - REDIS_ADDRESS=redis:6379
     depends_on:
       - postgres
+      - redis
     entrypoint:
       [
         "/app/wait-for.sh",
@@ -28,27 +36,28 @@ services:
       ]
     command: [ "/app/main" ]
 
-  # frontend:
-  #   container_name: hwf
-  #   image: happy-wallet-frontend
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 3000:3000
-  #   volumes:
-  #     - ./frontend/src:/app/src
-  #     # - node_modules:/app/node_modules
-  #   environment:
-  #     - NODE_ENV=development
-  #     # - CHOKIDAR_USEPOLLING=true
-  #     # - FAST_REFRESH = false
-  #   stdin_open: true
-  #   tty: true
-  #   command: npm run dev
-  #   depends_on:
-  #     - backend
+  frontend:
+    container_name: hwf
+    image: happy-wallet-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend/src:/app/src
+      # - node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+      # - CHOKIDAR_USEPOLLING=true
+      # - FAST_REFRESH = false
+    stdin_open: true
+    tty: true
+    command: npm run dev
+    depends_on:
+      - backend
 
-# volumes:
-#   node_modules:
+volumes:
+  data-volume:
+  # node_modules:
   
